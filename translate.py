@@ -5,7 +5,7 @@ from googletrans import Translator
 
 def translate_dict(data, target_key, translator, target_lang):
     for key, value in data.items():
-        if key == target_key and isinstance(value, str):
+        if key == target_key and isinstance(value, str) and value is not None and value != "":
             print(f"Translating: {value}")
             translated_value = translator.translate(
                 value, dest=target_lang).text

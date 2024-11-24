@@ -1,0 +1,1611 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "definitions": {
+    "aggregator": {
+      "description": "関数結果アグリゲーターの構成設定。",
+      "type": "object",
+      "properties": {
+        "batchSize": {
+          "description": "集約の最大バッチサイズ。この値に「フラッシュタイムアウト」の前に到達すると、すべての値がフラッシュされます。",
+          "type": "integer",
+          "default": 1000
+        },
+        "flushTimeout": {
+          "description": "集約期間。アグリゲーターは、この値に基づいて定期的にフラッシュします。",
+          "pattern": "^(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d$",
+          "default": "00:00:30"
+        }
+      },
+      "additionalProperties": false
+    },
+    "functions": {
+      "description": "ホストがロードする機能のリスト。",
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "type": "string"
+      }
+    },
+    "functionTimeout": {
+      "description": "すべての機能のタイムアウト期間を示す値。",
+      "oneOf": [
+        {
+          "type": "string",
+          "pattern": "^(-1|(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d)$"
+        },
+        {
+          "enum": [
+            null
+          ]
+        }
+      ]
+    },
+    "watchDirectories": {
+      "description": "これらのディレクトリのコードが変更されたときに、機能によってピックアップされることを確認するために、変更を監視する必要がある共有コードディレクトリのセット",
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "singleton": {
+      "description": "Singletonロック動作の構成設定。",
+      "type": "object",
+      "properties": {
+        "lockPeriod": {
+          "description": "関数レベルのロックが使用される期間（それらは自動更新されます）。",
+          "pattern": "^(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d$",
+          "default": "00:00:15"
+        },
+        "listenerLockPeriod": {
+          "description": "リスナーがロックされる期間。",
+          "pattern": "^(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d$",
+          "default": "00:01:00"
+        },
+        "listenerLockRecoveryPollingInterval": {
+          "description": "リスナーロックが起動時に取得できなかった場合、リスナーロックリカバリに使用される時間間隔。",
+          "pattern": "^(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d$",
+          "default": "00:01:00"
+        },
+        "lockAcquisitionTimeout": {
+          "description": "ランタイムがロックを取得しようとする最大時間。",
+          "pattern": "^(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d$",
+          "default": "00:01:00"
+        },
+        "lockAcquisitionPollingInterval": {
+          "description": "ロック取得の試み間の間隔。",
+          "pattern": "^(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d$"
+        }
+      },
+      "additionalProperties": false
+    },
+    "healthMonitor": {
+      "description": "機能ホストヘルスモニターの構成設定",
+      "type": "object",
+      "properties": {
+        "enabled": {
+          "description": "機能が有効になっているかどうかを指定します。",
+          "type": "boolean",
+          "default": true
+        },
+        "healthCheckInterval": {
+          "description": "周期的なバックグラウンドヘルスチェック間の時間間隔",
+          "pattern": "^(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d$",
+          "default": "00:00:10"
+        },
+        "healthCheckWindow": {
+          "description": "HealthCheckのしきい値設定と組み合わせて使用​​されるスライドタイムウィンドウ。",
+          "pattern": "^(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d$",
+          "default": "00:02:00"
+        },
+        "healthCheckThreshold": {
+          "description": "ホストのリサイクルが開始される前に、健康チェックが失敗する可能性がある最大回数。",
+          "type": "integer",
+          "default": 6
+        },
+        "counterThreshold": {
+          "description": "パフォーマンスカウンターが不健康と見なされるしきい値。",
+          "type": "number",
+          "default": 0.8
+        }
+      },
+      "additionalProperties": false
+    },
+    "http-extension": {
+      "type": "object",
+      "description": "「HTTP」トリガーの構成設定。",
+      "required": [
+        "routePrefix"
+      ],
+      "properties": {
+        "routePrefix": {
+          "description": "すべてのルートに適用されるデフォルトのルートプレフィックスを定義します。空の文字列を使用してプレフィックスを削除します。",
+          "type": "string",
+          "default": "api"
+        },
+        "maxConcurrentRequests": {
+          "description": "並行して実行されるHTTP関数の最大数を定義します。",
+          "type": "integer",
+          "default": -1
+        },
+        "maxOutstandingRequests": {
+          "description": "いつでも保持される未解決のリクエストの最大数を定義します。",
+          "type": "integer",
+          "default": -1
+        },
+        "dynamicThrottlesEnabled": {
+          "description": "動的ホストカウンターチェックを有効にする必要があるかどうかを示します。",
+          "type": "boolean",
+          "default": false
+        },
+        "hsts": {
+          "description": "厳密な輸送セキュリティの構成設定",
+          "type": "object",
+          "properties": {
+            "isEnabled": {
+              "description": "HSTS構成を適用するかどうかを示します",
+              "type": "boolean"
+            },
+            "excludedHosts": {
+              "description": "HSTSヘッダーを追加しないホスト名のリストを定義します。",
+              "type": "array",
+              "uniqueItems": true,
+              "items": {
+                "type": "string"
+              }
+            },
+            "includeSubDomains": {
+              "description": "厳密な輸送セキュリティヘッダーのincludeubdomainパラメーターを有効にする必要があるかどうかを示します。",
+              "type": "boolean"
+            },
+            "maxAge": {
+              "description": "厳密な輸送セキュリティヘッダーの最大時代のパラメーターを定義します。",
+              "type": "string"
+            },
+            "preload": {
+              "description": "厳密な輸送セキュリティヘッダーのプリロードパラメーターを有効にする必要があるかどうかを示します。",
+              "type": "boolean"
+            }
+          },
+          "additionalProperties": false
+        },
+        "customHeaders": {
+          "description": "HTTP応答でカスタムヘッダーを設定できます。X-Content-Type-Options。",
+          "type": "object"
+        }
+      },
+      "additionalProperties": false
+    },
+    "queues-extension": {
+      "description": "「キュー」トリガーの構成設定。",
+      "type": "object",
+      "properties": {
+        "maxPollingInterval": {
+          "description": "キュー投票間のミリ秒単位の最大間隔。",
+          "type": "integer",
+          "default": 1000
+        },
+        "batchSize": {
+          "description": "並行して取得および処理するキューメッセージの数（ジョブ機能ごと）。",
+          "type": "integer",
+          "maximum": 32,
+          "minimum": 1,
+          "default": 16
+        },
+        "maxDequeueCount": {
+          "description": "メッセージを処理する前に毒のキューに移動する時間数",
+          "type": "integer",
+          "default": 5
+        },
+        "newBatchThreshold": {
+          "description": "メッセージの新しいバッチが取得されるしきい値。デフォルトはbatchsize/2です。",
+          "type": "integer"
+        },
+        "visibilityTimeout": {
+          "description": "処理に失敗するメッセージに適用される可視性タイムアウト。",
+          "pattern": "^(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d$",
+          "default": "00:00:00"
+        }
+      },
+      "additionalProperties": false
+    },
+    "queues-extension-v2": {
+      "description": "「キュー」トリガーの構成設定。",
+      "type": "object",
+      "properties": {
+        "maxPollingInterval": {
+          "type": "string",
+          "pattern": "^[0-9][0-9]:[0-9][0-9]:[0-9][0-9](?:\\.[0-9]+)?$",
+          "default": "00:00:02",
+          "description": "キューポーリング間の最大間隔。最小は00：00：00.100（100ミリ秒）です。"
+        },
+        "visibilityTimeout": {
+          "type": "string",
+          "pattern": "^[0-9][0-9]:[0-9][0-9]:[0-9][0-9](?:\\.[0-9]+)?$",
+          "default": "00:00:00",
+          "description": "メッセージの処理が失敗したときの再試行間の時間間隔。"
+        },
+        "batchSize": {
+          "description": "関数がランタイムが同時に取得し、並行して処理するキューメッセージの数。処理される数値が「newBatchThreshold」に到達すると、ランタイムは別のバッチを取得し、それらのメッセージの処理を開始します。したがって、関数ごとに処理される同時メッセージの最大数は「batchsize」と「newbatchthreshold」です。この制限は、各キュートリガー機能に個別に適用されます。",
+          "type": "integer",
+          "maximum": 32,
+          "minimum": 1,
+          "default": 16
+        },
+        "maxDequeueCount": {
+          "description": "メッセージを処理する前に毒のキューに移動する時間数",
+          "type": "integer",
+          "default": 5
+        },
+        "newBatchThreshold": {
+          "description": "メッセージの新しいバッチが取得されるしきい値。デフォルトはbatchsize/2です。",
+          "type": "integer"
+        },
+        "messageEncoding": {
+          "description": "この設定は、拡張バージョン5.0.0以上でのみ使用できます。メッセージのエンコード形式を表します。",
+          "type": "string",
+          "enum": [
+            "base64",
+            "none"
+          ]
+        }
+      },
+      "additionalProperties": false
+    },
+    "durableTask-extension": {
+      "description": "「オーケストレーション」/「アクティビティ」トリガーの構成設定。",
+      "type": "object",
+      "properties": {
+        "hubName": {
+          "description": "代替タスクハブ名を使用して、同じストレージバックエンドを使用している場合でも、複数の耐久性のある関数アプリケーションを互いに分離できます。",
+          "type": "string",
+          "default": "DurableFunctionsHub"
+        },
+        "storageProvider": {
+          "type": "object",
+          "properties": {
+            "connectionStringName": {
+              "type": "string"
+            },
+            "controlQueueBatchSize": {
+              "description": "一度にコントロールキューから引き出すメッセージの数。",
+              "type": "integer",
+              "default": 32
+            },
+            "controlQueueBufferThreshold": {
+              "description": "一度にメモリでバッファリングできるコントロールキューメッセージの数。その時点で、ディスパッチャーは追加のメッセージをデケートする前に待ちます。",
+              "type": "integer",
+              "default": 256
+            },
+            "controlQueueVisibilityTimeout": {
+              "description": "dequeuedコントロールキューメッセージの可視性タイムアウト。",
+              "type": "string",
+              "default": "00:05:00"
+            },
+            "maxQueuePollingInterval": {
+              "description": "HH：MM：SS形式の最大制御および項目キューポーリング間隔。値が高いと、メッセージ処理のレイテンシが高くなる可能性があります。値が低いと、ストレージトランザクションが増加するため、ストレージコストが高くなります。",
+              "type": "string",
+              "default": "00:00:30"
+            },
+            "partitionCount": {
+              "description": "制御キューのパーティションカウント。1〜16の間の正の整数である可能性があります。",
+              "type": "integer",
+              "default": 4
+            },
+            "trackingStoreConnectionStringName": {
+              "description": "履歴とインスタンステーブルに使用する接続文字列の名前。指定されていない場合、AzurestorageConnectionStringName接続が使用されます。",
+              "type": "string"
+            },
+            "trackingStoreNamePrefix": {
+              "description": "TrackingStoreConnectionStringNameが指定されているときに、履歴とインスタンステーブルに使用するプレフィックスが指定されています。設定されていない場合、デフォルトのプレフィックス値はDurableTaskになります。TrackingStoreConnectionStringNameが指定されていない場合、履歴とインスタンステーブルはHubname値をプレフィックスとして使用し、TrackingStorenAmePrefixの任意の設定は無視されます。",
+              "type": "string"
+            },
+            "useLegacyPartitionManagement": {
+              "description": "falseに設定すると、パーティション管理アルゴリズムを使用して、スケーリング時に関数実行の重複の可能性を減らします。",
+              "type": "boolean",
+              "default": false
+            },
+            "workItemQueueVisibilityTimeout": {
+              "description": "Dequeued Work Itemキューメッセージの可視性タイムアウト。",
+              "type": "string",
+              "default": "00:05:00"
+            }
+          },
+          "additionalProperties": false
+        },
+        "tracing": {
+          "type": "object",
+          "properties": {
+            "traceInputsAndOutputs": {
+              "description": "関数呼び出しの入力と出力をトレースするかどうかを示す値。機能実行イベントをトレースする場合のデフォルトの動作は、シリアル化された入力のバイト数と関数呼び出しの出力を含めることです。この動作は、ログを膨らませたり、感度の高い情報を不注意に公開することなく、入力と出力がどのように見えるかについての最小限の情報を提供します。このプロパティをTRUEに設定すると、デフォルトの関数ログが関数入力と出力のコンテンツ全体をログに記録します。",
+              "type": "boolean",
+              "default": false
+            },
+            "traceReplayEvents": {
+              "description": "Application Insightsにオーケストレーションリプレイイベントを作成するかどうかを示す値。",
+              "type": "boolean",
+              "default": false
+            }
+          },
+          "additionalProperties": false
+        },
+        "notifications": {
+          "type": "object",
+          "properties": {
+            "eventGrid": {
+              "type": "object",
+              "properties": {
+                "topicEndpoint": {
+                  "description": "AzureイベントグリッドカスタムトピックエンドポイントのURL。このプロパティが設定されると、オーケストレーションライフサイクル通知イベントがこのエンドポイントに公開されます。このプロパティは、アプリの設定解像度をサポートしています。",
+                  "type": "string"
+                },
+                "keySettingName": {
+                  "description": "Azure Event Grid Custom Custom TopicをEventGridTopicEndPointで認証するために使用されるキーを含むアプリ設定の名前。",
+                  "type": "string"
+                },
+                "publishRetryCount": {
+                  "description": "イベントグリッドトピックに公開すると再試行する回数が失敗します。",
+                  "type": "integer",
+                  "default": 0
+                },
+                "publishRetryInterval": {
+                  "description": "イベントグリッドは、HH：MM：SS形式で再試行間隔を公開します。",
+                  "type": "string",
+                  "default": "00:05:00"
+                },
+                "publishEventTypes": {
+                  "description": "イベントグリッドに公開するイベントタイプのリスト。指定されていない場合、すべてのイベントタイプが公開されます。",
+                  "type": "array",
+                  "uniqueItems": true,
+                  "items": {
+                    "type": "string",
+                    "enum": [
+                      "Started",
+                      "Pending",
+                      "Completed",
+                      "Failed",
+                      "Terminated"
+                    ]
+                  }
+                }
+              },
+              "additionalProperties": false
+            }
+          },
+          "additionalProperties": false
+        },
+        "maxConcurrentActivityFunctions": {
+          "description": "単一のホストインスタンスで同時に処理できるアクティビティ関数の最大数。",
+          "type": "integer",
+          "default": 10
+        },
+        "maxConcurrentOrchestratorFunctions": {
+          "description": "単一のホストインスタンスで同時に処理できるオーケストレーター関数の最大数。",
+          "type": "integer",
+          "default": 10
+        },
+        "extendedSessionsEnabled": {
+          "type": "boolean"
+        },
+        "extendedSessionIdleTimeoutInSeconds": {
+          "type": "integer"
+        },
+        "useAppLease": {
+          "description": "Trueに設定すると、アプリはタスクハブメッセージを処理する前にアプリレベルのBLOBリースを取得する必要があります。",
+          "type": "boolean",
+          "default": true
+        },
+        "useGracefulShutdown": {
+          "description": "ホストのシャットダウンがインプロセス機能実行に失敗する可能性を減らすために、優雅にシャットダウンすることを有効にします。",
+          "type": "boolean",
+          "default": false
+        },
+        "maxEntityOperationBatchSize": {
+          "description": "バッチとして処理されるエンティティオペレーションの最大数。1に設定すると、バッチは無効になり、各操作メッセージは個別の関数の呼び出しによって処理されます。",
+          "type": "integer",
+          "default": 50
+        },
+        "useTablePartitionManagement": {
+          "type": "boolean",
+          "default": false
+        }
+      },
+      "additionalProperties": false
+    },
+    "cosmosDB-extension": {
+      "description": "Azure Cosmos DBバインディングとトリガーの構成設定。",
+      "type": "object",
+      "properties": {
+        "connectionMode": {
+          "description": "ConnectionMode documentClientsで使用される。",
+          "enum": [
+            "Gateway",
+            "Direct"
+          ],
+          "default": "Gateway"
+        },
+        "protocol": {
+          "description": "DocumentClientsで使用されるプロトコル。",
+          "enum": [
+            "Https",
+            "Tcp"
+          ],
+          "default": "Https"
+        }
+      },
+      "additionalProperties": false
+    },
+    "cosmosDB-extension-v2": {
+      "description": "Azure Cosmos DBバインディングとトリガーの構成設定。",
+      "type": "object",
+      "properties": {
+        "connectionMode": {
+          "description": "ConnectionMode documentClientsで使用される。",
+          "enum": [
+            "Gateway",
+            "Direct"
+          ],
+          "default": "Gateway"
+        },
+        "protocol": {
+          "description": "DocumentClientsで使用されるプロトコル。",
+          "enum": [
+            "Https",
+            "Tcp"
+          ],
+          "default": "Https"
+        },
+        "leaseOptions": {
+          "type": "object",
+          "properties": {
+            "leasePrefix": {
+              "description": "アプリ内のすべての機能で使用するリースプレフィックス。",
+              "type": "string"
+            }
+          },
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false
+    },
+    "version-1": {
+      "type": "object",
+      "properties": {
+        "aggregator": {
+          "$ref": "#/definitions/aggregator"
+        },
+        "applicationInsights": {
+          "description": "アプリケーションの洞察ロギングの構成設定。",
+          "type": "object",
+          "properties": {
+            "sampling": {
+              "description": "アプリケーション洞察の構成設定クライアント側の適応サンプリング。",
+              "type": "object",
+              "properties": {
+                "isEnabled": {
+                  "description": "Trueの場合、クライアント側の適応サンプリングが有効になります。",
+                  "type": "boolean",
+                  "default": true
+                },
+                "maxTelemetryItemsPerSecond": {
+                  "description": "適応アルゴリズムが各インスタンスで目指す目標レート",
+                  "type": "integer",
+                  "default": 5
+                }
+              }
+            }
+          },
+          "additionalProperties": false
+        },
+        "functions": {
+          "$ref": "#/definitions/functions"
+        },
+        "functionTimeout": {
+          "$ref": "#/definitions/functionTimeout"
+        },
+        "healthMonitor": {
+          "$ref": "#/definitions/healthMonitor"
+        },
+        "id": {
+          "description": "このジョブホストの一意のID。ダッシュが削除された状態で、小文字のガイドにすることができます",
+          "type": "string",
+          "minLength": 1
+        },
+        "logger": {
+          "description": "ロギング用の構成設定。",
+          "type": "object",
+          "properties": {
+            "defaultLevel": {
+              "description": "ロギングのデフォルトレベル。カテゴリレベルが指定されていない場合、この値が使用されます。",
+              "enum": [
+                "Critical",
+                "Debug",
+                "Error",
+                "Information",
+                "None",
+                "Trace",
+                "Warning"
+              ],
+              "default": "Information"
+            },
+            "categoryLevels": {
+              "description": "特定のカテゴリのログレベル。",
+              "type": "object",
+              "additionalProperties": {
+                "enum": [
+                  "Critical",
+                  "Debug",
+                  "Error",
+                  "Information",
+                  "None",
+                  "Trace",
+                  "Warning"
+                ]
+              }
+            }
+          }
+        },
+        "singleton": {
+          "$ref": "#/definitions/singleton"
+        },
+        "watchDirectories": {
+          "$ref": "#/definitions/watchDirectories"
+        },
+        "tracing": {
+          "description": "ロギング/トレース動作の構成設定。",
+          "type": "object",
+          "properties": {
+            "consoleLevel": {
+              "description": "コンソールロギングに使用されるトレースレベル。",
+              "enum": [
+                "off",
+                "error",
+                "warning",
+                "info",
+                "verbose"
+              ],
+              "default": "verbose"
+            },
+            "fileLoggingMode": {
+              "description": "ファイルロギングのレベルが有効になっているかどうかを決定します。",
+              "enum": [
+                "never",
+                "always",
+                "debugOnly"
+              ],
+              "default": "debugOnly"
+            }
+          },
+          "additionalProperties": false
+        },
+        "http": {
+          "$ref": "#/definitions/http-extension"
+        },
+        "queues": {
+          "$ref": "#/definitions/queues-extension"
+        },
+        "serviceBus": {
+          "description": "「serversbus」トリガーの構成設定。",
+          "type": "object",
+          "properties": {
+            "maxConcurrentCalls": {
+              "description": "メッセージポンプが開始するコールバックへの同時呼び出しの最大数。",
+              "type": "integer",
+              "default": 16
+            },
+            "prefetchCount": {
+              "description": "基礎となるMessagereceiverが使用するデフォルトのPrefetchCount。",
+              "type": "integer"
+            },
+            "autoRenewTimeout": {
+              "description": "サービスバスメッセージロックが自動的に更新される最大期間。",
+              "type": "string",
+              "pattern": "^(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d$",
+              "default": "00:05:00"
+            },
+            "autoComplete": {
+              "description": "処理が成功した後、メッセージを自動的に完了するかどうかを指定します。",
+              "type": "boolean",
+              "default": true
+            }
+          },
+          "additionalProperties": false
+        },
+        "eventHub": {
+          "description": "「EventHub」トリガーの構成設定。",
+          "type": "object",
+          "properties": {
+            "maxBatchSize": {
+              "description": "受信ループごとに受信した最大イベントカウント。",
+              "type": "integer"
+            },
+            "prefetchCount": {
+              "description": "基礎となるEventProcessorHostが使用するデフォルトのプリフェッチカウント。",
+              "type": "integer"
+            },
+            "batchCheckpointFrequency": {
+              "description": "イベントハブカーソルチェックポイントを作成する前に処理するバッチの数",
+              "type": "integer",
+              "default": 1
+            }
+          },
+          "additionalProperties": false
+        },
+        "durableTask": {
+          "$ref": "#/definitions/durableTask-extension"
+        },
+        "documentDB": {
+          "$ref": "#/definitions/cosmosDB-extension"
+        }
+      },
+      "additionalProperties": false
+    },
+    "version-2": {
+      "type": "object",
+      "properties": {
+        "extensionBundle": {
+          "description": "拡張バンドルの構成設定",
+          "type": "object",
+          "properties": {
+            "id": {
+              "description": "拡張バンドルのID",
+              "type": "string",
+              "default": "Microsoft.Azure.Functions.ExtensionBundle"
+            },
+            "version": {
+              "description": "拡張バンドルのバージョン。",
+              "type": "string",
+              "examples": [
+                "[1.*, 2.0.0)",
+                "[2.*, 3.0.0)"
+              ],
+              "default": "[2.*, 3.0.0)"
+            }
+          },
+          "examples": [
+            {
+              "id": "Microsoft.Azure.Functions.ExtensionBundle",
+              "version": "[2.*, 3.0.0)"
+            }
+          ],
+          "additionalProperties": false
+        },
+        "aggregator": {
+          "$ref": "#/definitions/aggregator"
+        },
+        "functions": {
+          "$ref": "#/definitions/functions"
+        },
+        "functionTimeout": {
+          "$ref": "#/definitions/functionTimeout"
+        },
+        "healthMonitor": {
+          "$ref": "#/definitions/healthMonitor"
+        },
+        "languageWorker": {
+          "description": "言語ワーカーの構成設定。",
+          "type": "object",
+          "properties": {
+            "workersDirectory": {
+              "description": "言語ワーカーのディレクトリのフルパスを指定します",
+              "type": "string"
+            }
+          },
+          "additionalProperties": false
+        },
+        "logging": {
+          "description": "ロギング用の構成設定。",
+          "type": "object",
+          "properties": {
+            "logLevel": {
+              "description": "特定のカテゴリのログレベル。",
+              "type": "object",
+              "properties": {
+                "default": {
+                  "description": "ロギングのデフォルトレベル。カテゴリレベルが指定されていない場合、この値が使用されます。",
+                  "enum": [
+                    "Critical",
+                    "Debug",
+                    "Error",
+                    "Information",
+                    "None",
+                    "Trace",
+                    "Warning"
+                  ],
+                  "default": "Information"
+                }
+              },
+              "additionalProperties": {
+                "enum": [
+                  "Critical",
+                  "Debug",
+                  "Error",
+                  "Information",
+                  "None",
+                  "Trace",
+                  "Warning"
+                ]
+              }
+            },
+            "applicationInsights": {
+              "description": "アプリケーションの洞察ロギングの構成設定。",
+              "type": "object",
+              "properties": {
+                "samplingSettings": {
+                  "description": "アプリケーション洞察の構成設定クライアント側の適応サンプリング。",
+                  "type": "object",
+                  "properties": {
+                    "isEnabled": {
+                      "description": "Trueの場合、クライアント側の適応サンプリングが有効になります。",
+                      "type": "boolean",
+                      "default": true
+                    },
+                    "maxTelemetryItemsPerSecond": {
+                      "description": "適応アルゴリズムが各インスタンスで目指す目標レート",
+                      "type": "integer",
+                      "default": 20
+                    },
+                    "evaluationInterval": {
+                      "description": "現在のテレメトリ速度が再評価される間隔。",
+                      "pattern": "^(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d$",
+                      "default": "01:00:00"
+                    },
+                    "initialSamplingPercentage": {
+                      "description": "サンプリングプロセスの開始時に適用される初期サンプリング率は、割合を動的に変化させます。",
+                      "type": "number",
+                      "default": 100
+                    },
+                    "samplingPercentageIncreaseTimeout": {
+                      "description": "サンプリングパーセンテージ値が変更されると、このプロパティは、より多くのデータをキャプチャするために、アプリケーションの洞察が再びサンプリング率を上げることができるかどうかを決定します。",
+                      "pattern": "^(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d$",
+                      "default": "00:00:01"
+                    },
+                    "samplingPercentageDecreaseTimeout": {
+                      "description": "サンプリングパーセンテージ値が変更されると、このプロパティは、より少ないデータをキャプチャするために、アプリケーションの洞察が再びサンプリングパーセンテージを下げることができるかを決定します。",
+                      "pattern": "^(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d$",
+                      "default": "00:00:01"
+                    },
+                    "minSamplingPercentage": {
+                      "description": "サンプリング率が異なるため、このプロパティは最小許容サンプリング率を決定します。",
+                      "type": "number",
+                      "default": 0.1
+                    },
+                    "maxSamplingPercentage": {
+                      "description": "サンプリングの割合が異なるため、このプロパティは最大許可されたサンプリング率を決定します。",
+                      "type": "number",
+                      "default": 100
+                    },
+                    "movingAverageRatio": {
+                      "description": "移動平均の計算では、最新の値に割り当てられた重量。値を1以下に使用します。値が小さくなると、アルゴリズムが突然の変化に対する反応性が低下します。",
+                      "type": "number",
+                      "default": 1
+                    },
+                    "excludedTypes": {
+                      "description": "サンプリングから除外されたタイプのセミコロンの区切りリスト。認識：依存関係、イベント、例外、PageView、リクエスト、トレース。",
+                      "type": "string",
+                      "default": "Request"
+                    },
+                    "includedTypes": {
+                      "description": "サンプリングしたいタイプのセミコロンの区切りリスト。認識：依存関係、イベント、例外、PageView、リクエスト、およびトレース。",
+                      "type": "string",
+                      "default": "Request"
+                    }
+                  }
+                },
+                "enableLiveMetrics": {
+                  "description": "ライブメトリックコレクションを有効にします。",
+                  "type": "boolean",
+                  "default": true
+                },
+                "enableLiveMetricsFilters": {
+                  "description": "ライブメトリックフィルターを有効にします。",
+                  "type": "boolean",
+                  "default": true
+                },
+                "enableDependencyTracking": {
+                  "description": "依存関係追跡を有効にします",
+                  "type": "boolean",
+                  "default": true
+                },
+                "enablePerformanceCountersCollection": {
+                  "description": "Kudu Performance Counters Collectionを有効にします。",
+                  "type": "boolean",
+                  "default": true
+                },
+                "httpAutoCollectionOptions": {
+                  "type": "object",
+                  "properties": {
+                    "enableHttpTriggerExtendedInfoCollection": {
+                      "description": "HTTPトリガーの拡張されたHTTP要求情報を有効または無効にします。",
+                      "type": "boolean",
+                      "default": true
+                    },
+                    "enableW3CDistributedTracing": {
+                      "description": "W3C分散トレースプロトコルのサポートを有効または無効にします（およびレガシー相関スキーマをオンにします）。enabableHttptriggEREXTEDEDEDEDINFOCOLLECTIONが真実の場合、デフォルトで有効になります。InableHttptriggeRextedEdendEnfocollectionが誤っている場合、このフラグは発信要求のみに適用され、着信要求ではありません",
+                      "type": "boolean",
+                      "default": true
+                    },
+                    "enableResponseHeaderInjection": {
+                      "description": "マルチコンポーネント相関ヘッダーの応答への噴射を有効または無効にします。インジェクションを有効にすることで、アプリケーションの洞察により、いくつかの計装キーが使用されるときにアプリケーションマップを構築できます。",
+                      "type": "boolean",
+                      "default": true
+                    }
+                  },
+                  "additionalProperties": false
+                },
+                "snapshotConfiguration": {
+                  "type": "object",
+                  "properties": {
+                    "agentEndpoint": {
+                      "description": "エンドポイントは、アプリケーションInsights Snapshotデバッガーサービスに接続するために使用されていました。",
+                      "oneOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "enum": [
+                            null
+                          ]
+                        }
+                      ],
+                      "default": null
+                    },
+                    "captureSnapshotMemoryWeight": {
+                      "description": "スナップショットを取るのに十分なメモリがあるかどうかを確認するときに、現在のプロセスメモリサイズに与えられる重み。",
+                      "type": "number",
+                      "default": 0.5
+                    },
+                    "failedRequestLimit": {
+                      "description": "テレメトリープロセッサが無効になる前に、スナップショットをリクエストするための失敗した要求の数の制限。",
+                      "type": "integer",
+                      "default": 3
+                    },
+                    "handleUntrackedExceptions": {
+                      "description": "アプリケーションの洞察テレメトリによって追跡されない例外の追跡を有効または無効にします。",
+                      "type": "boolean",
+                      "default": true
+                    },
+                    "isEnabled": {
+                      "description": "スナップショットコレクションを有効または無効にします。",
+                      "type": "boolean",
+                      "default": true
+                    },
+                    "isEnabledInDeveloperMode": {
+                      "description": "開発者モードでは、Snapshotコレクションが有効または無効になります。",
+                      "type": "boolean",
+                      "default": false
+                    },
+                    "isEnabledWhenProfiling": {
+                      "description": "アプリケーションInsights Profilerが詳細なプロファイリングセッションを収集している場合でも、Snapshotの作成を有効または無効にします。",
+                      "type": "boolean",
+                      "default": true
+                    },
+                    "isExceptionSnappointsEnabled": {
+                      "description": "例外のフィルタリングを有効または無効にします。",
+                      "type": "boolean",
+                      "default": false
+                    },
+                    "isLowPrioritySnapshotUploader": {
+                      "description": "通常の優先度以下でSnapshotuploaderプロセスを実行するかどうかを決定します。",
+                      "type": "boolean",
+                      "default": true
+                    },
+                    "maximumCollectionPlanSize": {
+                      "description": "いつでも追跡できる問題の最大数。",
+                      "type": "integer",
+                      "default": 50,
+                      "minimum": 1,
+                      "maximum": 9999
+                    },
+                    "maximumSnapshotsRequired": {
+                      "description": "単一の問題に対して収集されたスナップショットの最大数。",
+                      "type": "integer",
+                      "default": 3,
+                      "minimum": 1,
+                      "maximum": 999
+                    },
+                    "problemCounterResetInterval": {
+                      "description": "1分から7日間の範囲で問題カウンターをリセットする頻度。",
+                      "type": "string",
+                      "pattern": "^(?:[01]\\d|2[0-4]):[0-5]\\d:[0-5]\\d$",
+                      "default": "24:00:00"
+                    },
+                    "provideAnonymousTelemetry": {
+                      "description": "匿名の使用法とエラーテレメトリをMicrosoftに送信するかどうかを決定します。Microsoftに連絡してスナップショットデバッガーの問題のトラブルシューティングを支援する場合、このテレメトリを使用できます",
+                      "type": "boolean",
+                      "default": true
+                    },
+                    "reconnectInterval": {
+                      "description": "スナップショットデバッガーエンドポイントに再接続する頻度。許容範囲は1分から1日です。",
+                      "pattern": "^(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d$",
+                      "default": "00:15:00"
+                    },
+                    "shadowCopyFolder": {
+                      "description": "シャドウコピーバイナリに使用するフォルダーを指定します。設定されていない場合、次の環境変数によって指定されたフォルダーは、fabric_folder_app_temp、localappdata、appdata、tempの順番に試されます。",
+                      "oneOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "enum": [
+                            null
+                          ]
+                        }
+                      ],
+                      "default": null
+                    },
+                    "shareUploaderProcess": {
+                      "description": "Trueの場合、Snapshotuploaderの1つのインスタンスのみが、InstrumentationKeyを共有する複数のアプリのスナップショットを収集およびアップロードします。falseに設定されている場合、Snapshotuploaderはそれぞれ（ProcessName、InstrumentationKey）タプルに対して一意になります。",
+                      "type": "boolean",
+                      "default": true
+                    },
+                    "snapshotInLowPriorityThread": {
+                      "description": "低IO優先度のスレッドでスナップショットを処理するかどうかを判断します。",
+                      "type": "boolean",
+                      "default": true
+                    },
+                    "snapshotsPerDayLimit": {
+                      "description": "1日（24時間）で許可されるスナップショットの最大数。この制限は、Application Insights Service側でも実施されています。",
+                      "type": "integer",
+                      "default": 30
+                    },
+                    "snapshotsPerTenMinutesLimit": {
+                      "description": "10分で許可されるスナップショットの最大数。この値には上限はありませんが、アプリケーションのパフォーマンスに影響を与える可能性があるため、生産ワークロードでは注意を払っています。",
+                      "type": "integer",
+                      "default": 1
+                    },
+                    "tempFolder": {
+                      "description": "Minidumpsとアップローダーログファイルを書き込むためのフォルダーを指定します。設定されていない場合は、％Temp％\\ Dumpsが使用されます。",
+                      "oneOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "enum": [
+                            null
+                          ]
+                        }
+                      ],
+                      "default": null
+                    },
+                    "thresholdForSnapshotting": {
+                      "description": "スナップショットを求める前に、アプリケーションの洞察が例外を見る必要がある回数。",
+                      "type": "integer",
+                      "default": 1
+                    },
+                    "uploaderProxy": {
+                      "description": "スナップショットアップローダープロセスで使用されるプロキシサーバーをオーバーライドします。アプリケーションがプロキシサーバーを介してインターネットに接続する場合は、この設定を使用する必要がある場合があります。スナップショットコレクターは、アプリケーションのプロセス内で実行され、同じプロキシ設定を使用します。",
+                      "oneOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "enum": [
+                            null
+                          ]
+                        }
+                      ],
+                      "default": null
+                    }
+                  },
+                  "additionalProperties": false
+                }
+              },
+              "examples": [
+                {
+                  "samplingSettings": {
+                    "isEnabled": true,
+                    "excludedTypes": "Request"
+                  }
+                }
+              ],
+              "additionalProperties": false
+            },
+            "fileLoggingMode": {
+              "description": "ファイルロギングのレベルが有効になっているかどうかを決定します。",
+              "enum": [
+                "never",
+                "always",
+                "debugOnly"
+              ],
+              "default": "debugOnly"
+            }
+          }
+        },
+        "managedDependency": {
+          "description": "マネージド依存関係は、現在PowerShellベースの関数でのみサポートされている機能です。依存関係をサービスによって自動的に管理できるようになります。",
+          "type": "object",
+          "properties": {
+            "enabled": {
+              "description": "trueの場合、recumpution.psd1ファイルが処理されます",
+              "type": "boolean",
+              "default": true
+            }
+          },
+          "additionalProperties": false
+        },
+        "retry": {
+          "description": "アプリレベルで機能実行障害のポリシーを再試行します。Retryポリシーは、関数アプリのすべての機能に適用されます。",
+          "type": "object",
+          "properties": {
+            "strategy": {
+              "description": "関数実行の再試行に使用する戦略を再試行します",
+              "enum": [
+                "exponentialBackoff",
+                "fixedDelay"
+              ],
+              "default": "exponentialBackoff"
+            },
+            "maxRetryCount": {
+              "description": "関数実行ごとに許可されるRETRIREの最大数。-1は無期限に再試行することを意味します。",
+              "type": "integer"
+            },
+            "delayInterval": {
+              "description": "FixedDelay戦略を使用する場合、関数実行の遅延インターバルを示す値。",
+              "oneOf": [
+                {
+                  "type": "string",
+                  "pattern": "^(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d$"
+                },
+                {
+                  "enum": [
+                    null
+                  ]
+                }
+              ]
+            },
+            "minimumInterval": {
+              "description": "ExponentialBackoff戦略を使用する場合、関数実行の最小インターバルを示す値。",
+              "oneOf": [
+                {
+                  "type": "string",
+                  "pattern": "^(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d$"
+                },
+                {
+                  "enum": [
+                    null
+                  ]
+                }
+              ]
+            },
+            "maximumInterval": {
+              "description": "ExponentialBackoff戦略を使用する場合、関数実行のMaximumIntervalを示す値。",
+              "oneOf": [
+                {
+                  "type": "string",
+                  "pattern": "^(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d$"
+                },
+                {
+                  "enum": [
+                    null
+                  ]
+                }
+              ]
+            }
+          }
+        },
+        "customHandler": {
+          "description": "カスタムハンドラーの構成設定。",
+          "type": "object",
+          "properties": {
+            "description": {
+              "description": "カスタムハンドラープロセスの構成設定",
+              "type": "object",
+              "properties": {
+                "defaultExecutablePath": {
+                  "description": "カスタムハンドラープロセスへの名前またはパス",
+                  "type": "string"
+                },
+                "workingDirectory": {
+                  "description": "WorkingDirectoryカスタムハンドラープロセスで使用されます。設定されていない場合、デフォルトは機能アプリルートフォルダーになります。",
+                  "type": "string"
+                },
+                "arguments": {
+                  "description": "カスタムハンドラープロセスに渡される引数。環境変数を使用することができますパターン％envvarname％",
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              }
+            },
+            "enableForwardingHttpRequest": {
+              "description": "カスタムハンドラーにhttptriggerリクエストを転送します",
+              "type": "boolean",
+              "default": false
+            }
+          },
+          "additionalProperties": false
+        },
+        "singleton": {
+          "$ref": "#/definitions/singleton"
+        },
+        "watchDirectories": {
+          "$ref": "#/definitions/watchDirectories"
+        },
+        "watchFiles": {
+          "description": "アプリを再起動する必要がある変更について監視されているファイルの1つ以上の名前の配列。これにより、これらのファイルのコードが変更されると、更新が機能によって選択されることが保証されます。",
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "additionalProperties": false
+        },
+        "version": {
+          "description": "Azure Functions host.jsonスキーマのバージョン。これは、Azure Functionsホストのバージョンではありません。",
+          "enum": [
+            "2.0"
+          ]
+        },
+        "extensions": {
+          "type": "object",
+          "properties": {
+            "http": {
+              "$ref": "#/definitions/http-extension"
+            },
+            "queues": {
+              "$ref": "#/definitions/queues-extension-v2"
+            },
+            "sendGrid": {
+              "type": "object",
+              "properties": {
+                "from": {
+                  "description": "すべての機能にわたる送信者のメールアドレス。",
+                  "type": "string"
+                }
+              },
+              "additionalProperties": false
+            },
+            "serviceBus": {
+              "description": "「serversbus」トリガーの構成設定。",
+              "oneOf": [
+                {
+                  "type": "object",
+                  "properties": {
+                    "prefetchCount": {
+                      "description": "基礎となるMessagereceiverが使用するデフォルトのPrefetchCount。",
+                      "type": "integer"
+                    },
+                    "messageHandlerOptions": {
+                      "description": "Messagereceiverに登録されたメッセージハンドラーに使用されるオプション。",
+                      "type": "object",
+                      "properties": {
+                        "maxConcurrentCalls": {
+                          "description": "メッセージポンプが開始するコールバックへの同時呼び出しの最大数。",
+                          "type": "integer",
+                          "default": 32
+                        },
+                        "maxAutoRenewDuration": {
+                          "description": "サービスバスメッセージロックが自動的に更新される最大期間。",
+                          "type": "string",
+                          "pattern": "^(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d$",
+                          "default": "00:05:00"
+                        },
+                        "autoComplete": {
+                          "description": "値メッセージが自動的に完了するかどうか、または関数が責任メッセージの完了を取得するかどうかを決定する値。",
+                          "type": "boolean",
+                          "default": true
+                        }
+                      },
+                      "additionalProperties": false
+                    },
+                    "sessionHandlerOptions": {
+                      "type": "object",
+                      "properties": {
+                        "maxAutoRenewDuration": {
+                          "description": "サービスバスメッセージロックが自動的に更新される最大期間。",
+                          "type": "string",
+                          "pattern": "^(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d$",
+                          "default": "00:55:00"
+                        },
+                        "autoComplete": {
+                          "description": "値メッセージが自動的に完了するかどうか、または関数が責任メッセージの完了を取得するかどうかを決定する値。",
+                          "type": "boolean",
+                          "default": false
+                        },
+                        "maxConcurrentSessions": {
+                          "description": "スケーリングされたインスタンスごとに同時に処理できるセッションの最大数。",
+                          "type": "integer",
+                          "default": 16
+                        },
+                        "messageWaitTimeout": {
+                          "type": "string",
+                          "default": "00:00:30"
+                        }
+                      },
+                      "additionalProperties": false
+                    },
+                    "batchOptions": {
+                      "type": "object",
+                      "properties": {
+                        "maxMessageCount": {
+                          "description": "トリガーされたときに関数に送信されるメッセージの最大数。",
+                          "type": "integer",
+                          "default": 1000
+                        },
+                        "operationTimeout": {
+                          "description": "HH：mm：ssで表される時間スパン値。",
+                          "pattern": "^(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d$",
+                          "default": "00:01:00"
+                        },
+                        "autoComplete": {
+                          "description": "トリガーが処理後に自動的に完全に呼び出す必要があるかどうか、または関数コードが手動で完全に呼び出されるかどうか。",
+                          "type": "boolean",
+                          "default": true
+                        }
+                      },
+                      "additionalProperties": false
+                    }
+                  },
+                  "additionalProperties": false
+                },
+                {
+                  "type": "object",
+                  "properties": {
+                    "clientRetryOptions": {
+                      "description": "ClientRetryOptionsの設定は、サービスバスサービスとのやり取りにのみ適用されます。それらは関数実行の再試行に影響しません。",
+                      "type": "object",
+                      "properties": {
+                        "mode": {
+                          "description": "再試行の遅​​延を計算するために使用するアプローチ。デフォルトの指数モードは、再試行する前に各試行が待機期間を増加させるバックオフ戦略に基づいて遅延で試行を再試行します。固定モードは、固定間隔での試行を再試行し、各遅延に一貫した期間があります。",
+                          "type": "string",
+                          "enum": [
+                            "exponential",
+                            "fixed"
+                          ],
+                          "default": "exponential"
+                        },
+                        "tryTimeout": {
+                          "description": "試行ごとに操作を待つための最大期間。",
+                          "type": "string",
+                          "pattern": "^(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d$",
+                          "default": "00:01:00"
+                        },
+                        "delay": {
+                          "description": "再試行の間に適用する遅延またはバックオフファクター。",
+                          "pattern": "^(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d\\.\\d\\d$",
+                          "type": "string",
+                          "default": "00:00:00.80"
+                        },
+                        "maxDelay": {
+                          "description": "再試行の合間に可能な最大遅延。",
+                          "pattern": "^(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d$",
+                          "type": "string",
+                          "default": "00:00:01"
+                        },
+                        "maxRetries": {
+                          "description": "関連する操作が失敗したと考える前の再試行の最大回数。",
+                          "type": "integer",
+                          "default": 3
+                        }
+                      }
+                    },
+                    "prefetchCount": {
+                      "description": "メッセージ受信者が同時に要求できるメッセージの数を取得または設定します。",
+                      "type": "integer",
+                      "default": 0
+                    },
+                    "transportType": {
+                      "description": "サービスバスとの通信に使用されるプロトコルとトランスポート。",
+                      "type": "string",
+                      "enum": [
+                        "amqpTcp",
+                        "amqpWebSockets"
+                      ],
+                      "default": "amqpTcp"
+                    },
+                    "webProxy": {
+                      "description": "ウェブソケットを介したイベントハブとの通信に使用するプロキシ。AMQPTCPトランスポートではプロキシを使用できません。",
+                      "type": "string"
+                    },
+                    "autoCompleteMessages": {
+                      "description": "関数の実行が成功した後にメッセージを自動的に完了するかどうかを判断し、オートコンプレット構成設定の代わりに使用する必要があります。",
+                      "type": "boolean",
+                      "default": true
+                    },
+                    "maxAutoLockRenewalDuration": {
+                      "description": "メッセージロックが自動的に更新される最大期間。この設定は、一度に単一のメッセージを受信する関数にのみ適用されます。",
+                      "type": "string",
+                      "pattern": "^(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d$",
+                      "default": "00:05:00"
+                    },
+                    "maxConcurrentCalls": {
+                      "description": "スケーリングされたインスタンスごとに開始する必要があるコールバックへの同時呼び出しの最大数。デフォルトでは、関数ランタイムは複数のメッセージを同時に処理します。この設定は、TriggerのIssessionsEnabledプロパティまたは属性がfalsに設定されている場合にのみ使用されます。この設定は、一度に単一のメッセージを受信する関数にのみ適用されます。",
+                      "type": "integer",
+                      "default": 16
+                    },
+                    "maxConcurrentSessions": {
+                      "description": "スケーリングされたインスタンスごとに同時に処理できるセッションの最大数。この設定は、トリガー上のIssessionsEnabledプロパティまたは属性がTrueに設定されている場合にのみ使用されます。この設定は、一度に単一のメッセージを受信する関数にのみ適用されます。",
+                      "type": "integer",
+                      "default": 8
+                    },
+                    "maxMessageBatchSize": {
+                      "description": "各関数呼び出しに渡されるメッセージの最大数。この設定は、メッセージのバッチを受信する関数にのみ適用されます。",
+                      "type": "integer",
+                      "default": 1000
+                    },
+                    "maxBatchWaitTime": {
+                      "description": "関数を呼び出す前に、トリガーがバッチを埋めるのを待つ必要がある最大間隔。待ち時間は、MinmessageBatchsizeが1より大きく、それ以外の場合は無視されている場合にのみ考慮されます。待ち時間が経過する前にMinmessageBatchSizeメッセージが利用可能な場合、関数は部分バッチで呼び出されます。待機時間が最も長いのは、エンティティメッセージロック期間の50％です。つまり、許容される最大値は2分30秒です。それ以外の場合は、ロックの例外を取得できます。注：この間隔は、関数が呼び出される正確なタイミングの厳格な保証ではありません。タイマーの精度により、エラーのマージンがわずかにあります。",
+                      "type": "string",
+                      "pattern": "^(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d$",
+                      "default": "00:00:30"
+                    },
+                    "sessionIdleTimeout": {
+                      "description": "現在アクティブなセッションのメッセージが受信されるのを待つための最大時間。この時間が経過した後、セッションは閉じられ、機能は別のセッションを処理しようとします。",
+                      "type": "string",
+                      "pattern": "^(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d$"
+                    },
+                    "enableCrossEntityTransactions": {
+                      "description": "サービスバスの名前空間に複数のエンティティにまたがるトランザクションを有効にするかどうか。",
+                      "type": "boolean",
+                      "default": false
+                    }
+                  },
+                  "additionalProperties": false
+                }
+              ],
+              "default": null
+            },
+            "eventHubs": {
+              "description": "「EventHub」トリガーの構成設定。",
+              "oneOf": [
+                {
+                  "type": "object",
+                  "properties": {
+                    "targetUnprocessedEventThreshold": {
+                      "description": "イベントハブトリガー機能の労働者ごとの未加工イベントの目標数。これは、MaxeventBatchSizeから推測されるデフォルトのスケーリングしきい値をオーバーライドするために、ターゲットベースのスケーリングで使用されます。",
+                      "type": "integer",
+                      "minimum": 1
+                    },
+                    "maxEventBatchSize": {
+                      "description": "単一の呼び出しのためにバッチに含まれるイベントの最大数。",
+                      "type": "integer",
+                      "default": 10,
+                      "minimum": 1
+                    },
+                    "batchCheckpointFrequency": {
+                      "description": "イベントハブのチェックポイントを作成する前に処理するバッチの数。",
+                      "type": "integer",
+                      "default": 1
+                    },
+                    "prefetchCount": {
+                      "description": "イベントハブから熱心に要求され、ローカルキャッシュで保持されるイベントの数は、読み取りがネットワーク操作の待機を避けることができるようにします。",
+                      "type": "integer",
+                      "default": 300
+                    },
+                    "transportType": {
+                      "description": "イベントハブとの通信に使用されるプロトコルとトランスポート。",
+                      "type": "string",
+                      "enum": [
+                        "amqpTcp",
+                        "amqpWebSockets"
+                      ],
+                      "default": "amqpTcp"
+                    },
+                    "webProxy": {
+                      "description": "ウェブソケットを介したイベントハブとの通信に使用するプロキシ。AMQPTCPトランスポートではプロキシを使用できません。",
+                      "type": "string"
+                    },
+                    "customEndpointAddress": {
+                      "description": "イベントハブへの接続を確立するときに使用するアドレス。ネットワークリクエストをアプリケーションゲートウェイまたはホスト環境に必要なその他のパスを介してルーティングできるようにします。",
+                      "type": "string"
+                    },
+                    "initialOffsetOptions": {
+                      "type": "object",
+                      "properties": {
+                        "type": {
+                          "description": "イベントストリームの場所は、チェックポイントがストレージに存在しない場合に処理を開始します。すべてのパーティションに適用されます。",
+                          "type": "string",
+                          "enum": [
+                            "fromStart",
+                            "fromEnd",
+                            "fromEnqueuedTime"
+                          ],
+                          "default": "fromStart"
+                        },
+                        "enqueuedTimeUtc": {
+                          "description": "処理を開始するストリーム内のイベントのエンキュー時間を指定します。initialoffsetoptions/typeがfromEnqueuedTimeとして構成されている場合、この設定は必須です。2020-10-26T20：31ZなどのDateTime.Parse（）でサポートされているあらゆる形式の時間をサポートします。",
+                          "type": "string"
+                        }
+                      },
+                      "additionalProperties": false
+                    },
+                    "clientRetryOptions": {
+                      "type": "object",
+                      "properties": {
+                        "mode": {
+                          "description": "再試行の遅​​延を計算するために使用するアプローチ。指数モードは、各試行が再試行する前に待機する期間を増加させるバックオフ戦略に基づいて、遅延で試みを再試行します。",
+                          "type": "string",
+                          "enum": [
+                            "exponential",
+                            "fixed"
+                          ],
+                          "default": "exponential"
+                        },
+                        "tryTimeout": {
+                          "description": "試行ごとに、イベントハブの操作が完了するのを待つ最大期間。",
+                          "pattern": "^(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d$",
+                          "type": "string",
+                          "default": "00:01:00"
+                        },
+                        "delay": {
+                          "description": "試行ごとに、イベントハブの操作が完了するのを待つ最大期間。",
+                          "pattern": "^(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d\\.\\d\\d$",
+                          "type": "string",
+                          "default": "00:00:00.80"
+                        },
+                        "maxDelay": {
+                          "description": "再試行の合間に可能な最大遅延。",
+                          "pattern": "^(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d$",
+                          "type": "string",
+                          "default": "00:00:01"
+                        },
+                        "maxRetries": {
+                          "description": "関連する操作が失敗したと考える前の再試行の最大回数。",
+                          "type": "integer",
+                          "default": 3
+                        }
+                      },
+                      "additionalProperties": false
+                    }
+                  },
+                  "additionalProperties": false
+                },
+                {
+                  "type": "object",
+                  "properties": {
+                    "batchCheckpointFrequency": {
+                      "description": "イベントハブカーソルチェックポイントを作成する前に処理するバッチの数。",
+                      "type": "integer",
+                      "default": 1
+                    },
+                    "eventProcessorOptions": {
+                      "type": "object",
+                      "description": "イベントハブイベントの処理に関する構成。",
+                      "properties": {
+                        "maxBatchSize": {
+                          "description": "受信ループごとに受信した最大イベントカウント。",
+                          "type": "integer"
+                        },
+                        "prefetchCount": {
+                          "description": "基礎となるEventProcessorHostが使用するデフォルトのプリフェッチカウント。",
+                          "type": "integer"
+                        }
+                      },
+                      "additionalProperties": false
+                    },
+                    "initialOffsetOptions": {
+                      "type": "object",
+                      "properties": {
+                        "type": {
+                          "description": "チェックポイントがストレージに存在しないときに処理を開始するイベントストリームの場所。",
+                          "type": "string",
+                          "enum": [
+                            "fromStart",
+                            "fromEnd",
+                            "fromEnqueuedTime"
+                          ],
+                          "default": "fromStart"
+                        }
+                      },
+                      "additionalProperties": false
+                    }
+                  },
+                  "additionalProperties": false
+                },
+                {
+                  "type": "object",
+                  "properties": {
+                    "maxBatchSize": {
+                      "description": "受信ループごとに受信した最大イベントカウント。",
+                      "type": "integer",
+                      "default": 64
+                    },
+                    "prefetchCount": {
+                      "description": "基礎となるEventProcessorHostが使用するデフォルトのプリフェッチ。",
+                      "type": "integer",
+                      "default": 255
+                    },
+                    "batchCheckpointFrequency": {
+                      "description": "イベントハブカーソルチェックポイントを作成する前に処理するイベントバッチの数。",
+                      "type": "integer",
+                      "default": 1
+                    }
+                  },
+                  "additionalProperties": false
+                }
+              ]
+            },
+            "durableTask": {
+              "$ref": "#/definitions/durableTask-extension"
+            },
+            "cosmosDB": {
+              "$ref": "#/definitions/cosmosDB-extension-v2"
+            },
+            "blobs": {
+              "type": "object",
+              "properties": {
+                "maxDegreeOfParallelism": {
+                  "description": "各ブロブトリガー機能に許可される同時の呼び出しの数。",
+                  "type": "integer",
+                  "minimum": 1
+                },
+                "poisonBlobThreshold": {
+                  "description": "メッセージを処理する前に毒のキューに移動する時間数。",
+                  "type": "integer",
+                  "minimum": 1,
+                  "default": 5
+                }
+              },
+              "additionalProperties": false
+            }
+          },
+          "additionalProperties": false
+        },
+        "concurrency": {
+          "description": "動的な並行性の構成設定",
+          "type": "object",
+          "properties": {
+            "dynamicConcurrencyEnabled": {
+              "description": "関数アプリの動的な並行性を有効または無効にします。",
+              "type": "boolean",
+              "default": true
+            },
+            "snapshotPersistenceEnabled": {
+              "description": "ストレージで持続する学習した並行性値を有効または無効にします。",
+              "type": "boolean",
+              "default": true
+            }
+          },
+          "additionalProperties": false
+        },
+        "sendCanceledInvocationsToWorker": {
+          "description": "言語労働者が「キャンセル」をサポートする場合は、キャンセルされた呼び出しを労働者に送信します。設定されていない場合、デフォルトはtrueです。",
+          "type": "boolean",
+          "default": true
+        },
+        "telemetryMode": {
+          "description": "オペンテレメトリー出力形式でログとトレースの出力をOpentelemetryをサポートする1​​つ以上のエンドポイントに有効にするために使用されます。",
+          "enum": [
+            "OpenTelemetry"
+          ]
+        }
+      },
+      "required": [
+        "version"
+      ],
+      "examples": [
+        {
+          "version": "2.0",
+          "logging": {
+            "applicationInsights": {
+              "samplingSettings": {
+                "isEnabled": true,
+                "excludedTypes": "Request"
+              }
+            }
+          },
+          "extensionBundle": {
+            "id": "Microsoft.Azure.Functions.ExtensionBundle",
+            "version": "[2.*, 3.0.0)"
+          }
+        }
+      ],
+      "additionalProperties": false
+    }
+  },
+  "id": "https://json.schemastore.org/host.json",
+  "oneOf": [
+    {
+      "$ref": "#/definitions/version-1"
+    },
+    {
+      "$ref": "#/definitions/version-2"
+    }
+  ],
+  "title": "JSON schema for Azure Functions host.json files",
+  "type": "object"
+}
