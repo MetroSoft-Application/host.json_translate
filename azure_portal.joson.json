@@ -1,5 +1,15 @@
 [
 {
+    "name": "AzureFunctionsJobHost__extensionBundle__id",
+    "value": "Microsoft.Azure.Functions.ExtensionBundle",
+    "slotSetting": false
+  },
+  {
+    "name": "AzureFunctionsJobHost__extensionBundle__version",
+    "value": "[2.*, 3.0.0)",
+    "slotSetting": false
+  },
+  {
     "name": "AzureFunctionsJobHost__aggregator__batchSize",
     "value": "1000",
     "slotSetting": false
@@ -312,6 +322,11 @@
   {
     "name": "AzureFunctionsJobHost__extensions__serviceBus__enableCrossEntityTransactions",
     "value": "false",
+    "slotSetting": false
+  },
+  {
+    "name": "AzureFunctionsJobHost__extensions__serviceBus__transportType",
+    "value": "amqpTcp",
     "slotSetting": false
   },
   {
