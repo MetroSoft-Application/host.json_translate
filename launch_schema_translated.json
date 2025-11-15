@@ -1,0 +1,250 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "allowTrailingCommas": true,
+  "definitions": {
+    "profile": {
+      "type": "object",
+      "allOf": [
+        {
+          "$ref": "#/definitions/profileContent"
+        }
+      ],
+      "required": [
+        "commandName"
+      ]
+    },
+    "iisSetting": {
+      "type": "object",
+      "allOf": [
+        {
+          "$ref": "#/definitions/iisSettingContent"
+        }
+      ]
+    },
+    "iisSettingContent": {
+      "properties": {
+        "windowsAuthentication": {
+          "type": "boolean",
+          "description": "IISおよびIIS ExpressのサイトのWindows認証を有効にするためにTRUEに設定します。",
+          "default": false
+        },
+        "anonymousAuthentication": {
+          "type": "boolean",
+          "description": "IISおよびIIS Expressのサイトの匿名認証を有効にするためにTRUEに設定します。",
+          "default": true
+        },
+        "iisExpress": {
+          "type": "object",
+          "description": "iisexpressプロファイルで使用するサイト設定。",
+          "allOf": [
+            {
+              "$ref": "#/definitions/iisBindingContent"
+            }
+          ]
+        },
+        "iis": {
+          "type": "object",
+          "description": "IISプロファイルで使用するサイト設定。",
+          "allOf": [
+            {
+              "$ref": "#/definitions/iisBindingContent"
+            }
+          ]
+        }
+      }
+    },
+    "iisBindingContent": {
+      "properties": {
+        "applicationUrl": {
+          "type": "string",
+          "format": "uri",
+          "description": "WebサイトのURL。",
+          "default": ""
+        },
+        "sslPort": {
+          "type": "integer",
+          "maximum": 65535,
+          "minimum": 0,
+          "description": "Webサイトに使用するSSLポート。",
+          "default": 0
+        }
+      }
+    },
+    "profileContent": {
+      "properties": {
+        "commandName": {
+          "type": "string",
+          "description": "実行するデバッグターゲットを識別します。",
+          "enum": [
+            "Executable",
+            "Project",
+            "IIS",
+            "IISExpress",
+            "DebugRoslynComponent",
+            "Docker",
+            "DockerCompose",
+            "MsixPackage",
+            "SdkContainer",
+            "WSL2"
+          ],
+          "default": "",
+          "minLength": 1
+        },
+        "commandLineArgs": {
+          "type": "string",
+          "description": "実行中のターゲットに渡す議論。",
+          "default": ""
+        },
+        "executablePath": {
+          "type": "string",
+          "description": "実行可能ファイルへの絶対的または相対パス。",
+          "default": ""
+        },
+        "workingDirectory": {
+          "type": "string",
+          "description": "コマンドの作業ディレクトリを設定します。"
+        },
+        "launchBrowser": {
+          "type": "boolean",
+          "description": "ブラウザを起動する必要がある場合は、trueに設定します。",
+          "default": false
+        },
+        "launchUrl": {
+          "type": "string",
+          "description": "ブラウザで起動する相対URL。"
+        },
+        "environmentVariables": {
+          "type": "object",
+          "description": "環境変数をキー/値のペアとして設定します。",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "applicationUrl": {
+          "type": "string",
+          "description": "Webサーバー用に構成するためのURLのセミコロンの区切りリスト。"
+        },
+        "nativeDebugging": {
+          "type": "boolean",
+          "description": "ネイティブコードのデバッグを有効にするためにTRUEに設定します。",
+          "default": false
+        },
+        "externalUrlConfiguration": {
+          "type": "boolean",
+          "description": "ASP.NETコアプロジェクトプロファイルを実行するときに、サイトの構成を無効にするようにtrueに設定します。",
+          "default": false
+        },
+        "use64Bit": {
+          "type": "boolean",
+          "description": "IIS Expressの64ビットバージョンを実行するようにTrueに設定し、falseを実行してx86バージョンを実行します。",
+          "default": true
+        },
+        "ancmHostingModel": {
+          "enum": [
+            "InProcess",
+            "OutOfProcess"
+          ],
+          "description": "IISおよびIIS ExpressでASP.NETコアプロジェクトを実行するときに使用するホスティングモデルを指定します。",
+          "default": false
+        },
+        "sqlDebugging": {
+          "type": "boolean",
+          "description": "SQLスクリプトのデバッグとストアドプロシージャのデバッグを有効にするためにTRUEに設定します。",
+          "default": false
+        },
+        "jsWebView2Debugging": {
+          "type": "boolean",
+          "description": "Microsoft Edge（Chromium）ベースのWebView2のJavaScriptデバッガーを有効にするためにTRUEに設定します。",
+          "default": false
+        },
+        "leaveRunningOnClose": {
+          "type": "boolean",
+          "description": "プロジェクトが閉じられたときにIISアプリケーションプールを実行したままにするようにTRUEに設定します。",
+          "default": false
+        },
+        "remoteDebugEnabled": {
+          "type": "boolean",
+          "description": "デバッガーをリモートコンピューターのプロセスに接続するように設定します。",
+          "default": false
+        },
+        "remoteDebugMachine": {
+          "type": "string",
+          "description": "名前のリモートマシンの名前とポート番号：ポート形式。"
+        },
+        "authenticationMode": {
+          "enum": [
+            "None",
+            "Windows"
+          ],
+          "description": "リモートコンピューターに接続するときに使用する認証スキーム。",
+          "default": "None"
+        },
+        "hotReloadEnabled": {
+          "type": "boolean",
+          "description": "実行中のアプリケーションへのコード変更を適用できるようにtrueに設定します。",
+          "default": true
+        },
+        "publishAllPorts": {
+          "type": "boolean",
+          "description": "すべての露出したポートをDocker（-P）のランダムポートに公開します。",
+          "default": true
+        },
+        "useSSL": {
+          "type": "boolean",
+          "description": "SSLポートをバインドするようにtrueに設定します。",
+          "default": true
+        },
+        "sslPort": {
+          "type": "integer",
+          "maximum": 65535,
+          "minimum": 0,
+          "description": "Webサイトに使用するSSLポート。",
+          "default": 0
+        },
+        "httpPort": {
+          "type": "integer",
+          "maximum": 65535,
+          "minimum": 0,
+          "description": "Webサイトに使用するHTTPポート。",
+          "default": 0
+        },
+        "dotnetRunMessages": {
+          "type": "boolean",
+          "description": "プロジェクトが構築されているときにメッセージを表示するようにtrueに設定します。",
+          "default": true
+        },
+        "inspectUri": {
+          "type": "string",
+          "description": "Blazor WebAssemblyアプリケーションでのデバッグを有効にするためのURL。",
+          "default": "{wsProtocol}://{url.hostname}:{url.port}/_framework/debug/ws-proxy?browser={browserInspectUri}"
+        },
+        "targetProject": {
+          "type": "string",
+          "description": "Roslynコンポーネントを実行する必要がある.NETプロジェクトファイルへの相対的または絶対パス。現在のプロジェクトのフォルダーに対して。",
+          "default": ""
+        }
+      }
+    }
+  },
+  "id": "https://json.schemastore.org/launchsettings.json",
+  "properties": {
+    "profiles": {
+      "type": "object",
+      "description": "デバッグプロファイルのリスト",
+      "additionalProperties": {
+        "$ref": "#/definitions/profile"
+      }
+    },
+    "iisSettings": {
+      "type": "object",
+      "description": "IISおよびIISは設定を表現します",
+      "allOf": [
+        {
+          "$ref": "#/definitions/iisSettingContent"
+        }
+      ]
+    }
+  },
+  "title": "JSON schema for the Visual Studio LaunchSettings.json file.",
+  "type": "object"
+}

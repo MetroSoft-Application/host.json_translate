@@ -1,0 +1,502 @@
+[
+{
+    "name": "AzureFunctionsJobHost__aggregator__batchSize",
+    "value": "1000",
+    "slotSetting": false
+  },
+  {
+    "name": "AzureFunctionsJobHost__aggregator__flushTimeout",
+    "value": "00:00:30",
+    "slotSetting": false
+  },
+  {
+    "name": "AzureFunctionsJobHost__functionTimeout",
+    "value": "00:05:00",
+    "slotSetting": false
+  },
+  {
+    "name": "AzureFunctionsJobHost__singleton__lockPeriod",
+    "value": "00:00:15",
+    "slotSetting": false
+  },
+  {
+    "name": "AzureFunctionsJobHost__singleton__listenerLockPeriod",
+    "value": "00:01:00",
+    "slotSetting": false
+  },
+  {
+    "name": "AzureFunctionsJobHost__singleton__listenerLockRecoveryPollingInterval",
+    "value": "00:01:00",
+    "slotSetting": false
+  },
+  {
+    "name": "AzureFunctionsJobHost__singleton__lockAcquisitionTimeout",
+    "value": "00:01:00",
+    "slotSetting": false
+  },
+  {
+    "name": "AzureFunctionsJobHost__healthMonitor__enabled",
+    "value": "true",
+    "slotSetting": false
+  },
+  {
+    "name": "AzureFunctionsJobHost__healthMonitor__healthCheckInterval",
+    "value": "00:00:10",
+    "slotSetting": false
+  },
+  {
+    "name": "AzureFunctionsJobHost__healthMonitor__healthCheckWindow",
+    "value": "00:02:00",
+    "slotSetting": false
+  },
+  {
+    "name": "AzureFunctionsJobHost__healthMonitor__healthCheckThreshold",
+    "value": "6",
+    "slotSetting": false
+  },
+  {
+    "name": "AzureFunctionsJobHost__healthMonitor__counterThreshold",
+    "value": "0.8",
+    "slotSetting": false
+  },
+  {
+    "name": "AzureFunctionsJobHost__extensions__http__routePrefix",
+    "value": "api",
+    "slotSetting": false
+  },
+  {
+    "name": "AzureFunctionsJobHost__extensions__http__maxConcurrentRequests",
+    "value": "-1",
+    "slotSetting": false
+  },
+  {
+    "name": "AzureFunctionsJobHost__extensions__http__maxOutstandingRequests",
+    "value": "-1",
+    "slotSetting": false
+  },
+  {
+    "name": "AzureFunctionsJobHost__extensions__http__dynamicThrottlesEnabled",
+    "value": "false",
+    "slotSetting": false
+  },
+  {
+    "name": "AzureFunctionsJobHost__extensions__queues__maxPollingInterval",
+    "value": "00:00:02",
+    "slotSetting": false
+  },
+  {
+    "name": "AzureFunctionsJobHost__extensions__queues__batchSize",
+    "value": "16",
+    "slotSetting": false
+  },
+  {
+    "name": "AzureFunctionsJobHost__extensions__queues__maxDequeueCount",
+    "value": "5",
+    "slotSetting": false
+  },
+  {
+    "name": "AzureFunctionsJobHost__extensions__queues__visibilityTimeout",
+    "value": "00:00:00",
+    "slotSetting": false
+  },
+  {
+    "name": "AzureFunctionsJobHost__extensions__durableTask__hubName",
+    "value": "DurableFunctionsHub",
+    "slotSetting": false
+  },
+  {
+    "name": "AzureFunctionsJobHost__extensions__durableTask__storageProvider__controlQueueBatchSize",
+    "value": "32",
+    "slotSetting": false
+  },
+  {
+    "name": "AzureFunctionsJobHost__extensions__durableTask__storageProvider__controlQueueBufferThreshold",
+    "value": "256",
+    "slotSetting": false
+  },
+  {
+    "name": "AzureFunctionsJobHost__extensions__durableTask__storageProvider__controlQueueVisibilityTimeout",
+    "value": "00:05:00",
+    "slotSetting": false
+  },
+  {
+    "name": "AzureFunctionsJobHost__extensions__durableTask__storageProvider__maxQueuePollingInterval",
+    "value": "00:00:30",
+    "slotSetting": false
+  },
+  {
+    "name": "AzureFunctionsJobHost__extensions__durableTask__storageProvider__partitionCount",
+    "value": "4",
+    "slotSetting": false
+  },
+  {
+    "name": "AzureFunctionsJobHost__extensions__durableTask__storageProvider__useLegacyPartitionManagement",
+    "value": "false",
+    "slotSetting": false
+  },
+  {
+    "name": "AzureFunctionsJobHost__extensions__durableTask__storageProvider__workItemQueueVisibilityTimeout",
+    "value": "00:05:00",
+    "slotSetting": false
+  },
+  {
+    "name": "AzureFunctionsJobHost__extensions__durableTask__tracing__traceInputsAndOutputs",
+    "value": "false",
+    "slotSetting": false
+  },
+  {
+    "name": "AzureFunctionsJobHost__extensions__durableTask__tracing__traceReplayEvents",
+    "value": "false",
+    "slotSetting": false
+  },
+  {
+    "name": "AzureFunctionsJobHost__extensions__durableTask__notifications__eventGrid__publishRetryCount",
+    "value": "0",
+    "slotSetting": false
+  },
+  {
+    "name": "AzureFunctionsJobHost__extensions__durableTask__notifications__eventGrid__publishRetryInterval",
+    "value": "00:05:00",
+    "slotSetting": false
+  },
+  {
+    "name": "AzureFunctionsJobHost__extensions__durableTask__maxConcurrentActivityFunctions",
+    "value": "10",
+    "slotSetting": false
+  },
+  {
+    "name": "AzureFunctionsJobHost__extensions__durableTask__maxConcurrentOrchestratorFunctions",
+    "value": "10",
+    "slotSetting": false
+  },
+  {
+    "name": "AzureFunctionsJobHost__extensions__durableTask__useAppLease",
+    "value": "true",
+    "slotSetting": false
+  },
+  {
+    "name": "AzureFunctionsJobHost__extensions__durableTask__useGracefulShutdown",
+    "value": "false",
+    "slotSetting": false
+  },
+  {
+    "name": "AzureFunctionsJobHost__extensions__durableTask__maxEntityOperationBatchSize",
+    "value": "50",
+    "slotSetting": false
+  },
+  {
+    "name": "AzureFunctionsJobHost__extensions__durableTask__useTablePartitionManagement",
+    "value": "false",
+    "slotSetting": false
+  },
+  {
+    "name": "AzureFunctionsJobHost__extensions__cosmosDB__connectionMode",
+    "value": "Gateway",
+    "slotSetting": false
+  },
+  {
+    "name": "AzureFunctionsJobHost__extensions__cosmosDB__protocol",
+    "value": "Https",
+    "slotSetting": false
+  },
+  {
+    "name": "AzureFunctionsJobHost__extensions__serviceBus__prefetchCount",
+    "value": "0",
+    "slotSetting": false
+  },
+  {
+    "name": "AzureFunctionsJobHost__extensions__serviceBus__messageHandlerOptions__maxConcurrentCalls",
+    "value": "32",
+    "slotSetting": false
+  },
+  {
+    "name": "AzureFunctionsJobHost__extensions__serviceBus__messageHandlerOptions__maxAutoRenewDuration",
+    "value": "00:05:00",
+    "slotSetting": false
+  },
+  {
+    "name": "AzureFunctionsJobHost__extensions__serviceBus__messageHandlerOptions__autoComplete",
+    "value": "true",
+    "slotSetting": false
+  },
+  {
+    "name": "AzureFunctionsJobHost__extensions__serviceBus__sessionHandlerOptions__maxAutoRenewDuration",
+    "value": "00:55:00",
+    "slotSetting": false
+  },
+  {
+    "name": "AzureFunctionsJobHost__extensions__serviceBus__sessionHandlerOptions__autoComplete",
+    "value": "false",
+    "slotSetting": false
+  },
+  {
+    "name": "AzureFunctionsJobHost__extensions__serviceBus__sessionHandlerOptions__maxConcurrentSessions",
+    "value": "16",
+    "slotSetting": false
+  },
+  {
+    "name": "AzureFunctionsJobHost__extensions__serviceBus__sessionHandlerOptions__messageWaitTimeout",
+    "value": "00:00:30",
+    "slotSetting": false
+  },
+  {
+    "name": "AzureFunctionsJobHost__extensions__serviceBus__batchOptions__maxMessageCount",
+    "value": "1000",
+    "slotSetting": false
+  },
+  {
+    "name": "AzureFunctionsJobHost__extensions__serviceBus__batchOptions__operationTimeout",
+    "value": "00:01:00",
+    "slotSetting": false
+  },
+  {
+    "name": "AzureFunctionsJobHost__extensions__serviceBus__batchOptions__autoComplete",
+    "value": "true",
+    "slotSetting": false
+  },
+  {
+    "name": "AzureFunctionsJobHost__extensions__serviceBus__clientRetryOptions__mode",
+    "value": "exponential",
+    "slotSetting": false
+  },
+  {
+    "name": "AzureFunctionsJobHost__extensions__serviceBus__clientRetryOptions__tryTimeout",
+    "value": "00:01:00",
+    "slotSetting": false
+  },
+  {
+    "name": "AzureFunctionsJobHost__extensions__serviceBus__clientRetryOptions__delay",
+    "value": "00:00:00.80",
+    "slotSetting": false
+  },
+  {
+    "name": "AzureFunctionsJobHost__extensions__serviceBus__clientRetryOptions__maxDelay",
+    "value": "00:00:01",
+    "slotSetting": false
+  },
+  {
+    "name": "AzureFunctionsJobHost__extensions__serviceBus__clientRetryOptions__maxRetries",
+    "value": "3",
+    "slotSetting": false
+  },
+  {
+    "name": "AzureFunctionsJobHost__extensions__serviceBus__autoCompleteMessages",
+    "value": "true",
+    "slotSetting": false
+  },
+  {
+    "name": "AzureFunctionsJobHost__extensions__serviceBus__maxAutoLockRenewalDuration",
+    "value": "00:05:00",
+    "slotSetting": false
+  },
+  {
+    "name": "AzureFunctionsJobHost__extensions__serviceBus__maxConcurrentCalls",
+    "value": "16",
+    "slotSetting": false
+  },
+  {
+    "name": "AzureFunctionsJobHost__extensions__serviceBus__maxConcurrentSessions",
+    "value": "8",
+    "slotSetting": false
+  },
+  {
+    "name": "AzureFunctionsJobHost__extensions__serviceBus__maxMessageBatchSize",
+    "value": "1000",
+    "slotSetting": false
+  },
+  {
+    "name": "AzureFunctionsJobHost__extensions__serviceBus__maxBatchWaitTime",
+    "value": "00:00:30",
+    "slotSetting": false
+  },
+  {
+    "name": "AzureFunctionsJobHost__extensions__serviceBus__enableCrossEntityTransactions",
+    "value": "false",
+    "slotSetting": false
+  },
+  {
+    "name": "AzureFunctionsJobHost__extensions__eventHubs__maxEventBatchSize",
+    "value": "10",
+    "slotSetting": false
+  },
+  {
+    "name": "AzureFunctionsJobHost__extensions__eventHubs__batchCheckpointFrequency",
+    "value": "1",
+    "slotSetting": false
+  },
+  {
+    "name": "AzureFunctionsJobHost__extensions__eventHubs__prefetchCount",
+    "value": "300",
+    "slotSetting": false
+  },
+  {
+    "name": "AzureFunctionsJobHost__extensions__eventHubs__transportType",
+    "value": "amqpTcp",
+    "slotSetting": false
+  },
+  {
+    "name": "AzureFunctionsJobHost__extensions__eventHubs__initialOffsetOptions__type",
+    "value": "fromStart",
+    "slotSetting": false
+  },
+  {
+    "name": "AzureFunctionsJobHost__extensions__eventHubs__clientRetryOptions__mode",
+    "value": "exponential",
+    "slotSetting": false
+  },
+  {
+    "name": "AzureFunctionsJobHost__extensions__eventHubs__clientRetryOptions__tryTimeout",
+    "value": "00:01:00",
+    "slotSetting": false
+  },
+  {
+    "name": "AzureFunctionsJobHost__extensions__eventHubs__clientRetryOptions__delay",
+    "value": "00:00:00.80",
+    "slotSetting": false
+  },
+  {
+    "name": "AzureFunctionsJobHost__extensions__eventHubs__clientRetryOptions__maxDelay",
+    "value": "00:00:01",
+    "slotSetting": false
+  },
+  {
+    "name": "AzureFunctionsJobHost__extensions__eventHubs__clientRetryOptions__maxRetries",
+    "value": "3",
+    "slotSetting": false
+  },
+  {
+    "name": "AzureFunctionsJobHost__extensions__blobs__maxDegreeOfParallelism",
+    "value": "8",
+    "slotSetting": false
+  },
+  {
+    "name": "AzureFunctionsJobHost__extensions__blobs__poisonBlobThreshold",
+    "value": "5",
+    "slotSetting": false
+  },
+  {
+    "name": "AzureFunctionsJobHost__logging__logLevel__default",
+    "value": "Information",
+    "slotSetting": false
+  },
+  {
+    "name": "AzureFunctionsJobHost__logging__applicationInsights__samplingSettings__isEnabled",
+    "value": "true",
+    "slotSetting": false
+  },
+  {
+    "name": "AzureFunctionsJobHost__logging__applicationInsights__samplingSettings__maxTelemetryItemsPerSecond",
+    "value": "20",
+    "slotSetting": false
+  },
+  {
+    "name": "AzureFunctionsJobHost__logging__applicationInsights__samplingSettings__evaluationInterval",
+    "value": "01:00:00",
+    "slotSetting": false
+  },
+  {
+    "name": "AzureFunctionsJobHost__logging__applicationInsights__samplingSettings__initialSamplingPercentage",
+    "value": "100",
+    "slotSetting": false
+  },
+  {
+    "name": "AzureFunctionsJobHost__logging__applicationInsights__samplingSettings__samplingPercentageIncreaseTimeout",
+    "value": "00:00:01",
+    "slotSetting": false
+  },
+  {
+    "name": "AzureFunctionsJobHost__logging__applicationInsights__samplingSettings__samplingPercentageDecreaseTimeout",
+    "value": "00:00:01",
+    "slotSetting": false
+  },
+  {
+    "name": "AzureFunctionsJobHost__logging__applicationInsights__samplingSettings__minSamplingPercentage",
+    "value": "0.1",
+    "slotSetting": false
+  },
+  {
+    "name": "AzureFunctionsJobHost__logging__applicationInsights__samplingSettings__maxSamplingPercentage",
+    "value": "100",
+    "slotSetting": false
+  },
+  {
+    "name": "AzureFunctionsJobHost__logging__applicationInsights__samplingSettings__movingAverageRatio",
+    "value": "1",
+    "slotSetting": false
+  },
+  {
+    "name": "AzureFunctionsJobHost__logging__applicationInsights__samplingSettings__excludedTypes",
+    "value": "Request",
+    "slotSetting": false
+  },
+  {
+    "name": "AzureFunctionsJobHost__logging__applicationInsights__samplingSettings__includedTypes",
+    "value": "Request",
+    "slotSetting": false
+  },
+  {
+    "name": "AzureFunctionsJobHost__logging__applicationInsights__enableLiveMetrics",
+    "value": "true",
+    "slotSetting": false
+  },
+  {
+    "name": "AzureFunctionsJobHost__logging__applicationInsights__enableLiveMetricsFilters",
+    "value": "true",
+    "slotSetting": false
+  },
+  {
+    "name": "AzureFunctionsJobHost__logging__applicationInsights__enableDependencyTracking",
+    "value": "true",
+    "slotSetting": false
+  },
+  {
+    "name": "AzureFunctionsJobHost__logging__applicationInsights__enablePerformanceCountersCollection",
+    "value": "true",
+    "slotSetting": false
+  },
+  {
+    "name": "AzureFunctionsJobHost__logging__applicationInsights__httpAutoCollectionOptions__enableHttpTriggerExtendedInfoCollection",
+    "value": "true",
+    "slotSetting": false
+  },
+  {
+    "name": "AzureFunctionsJobHost__logging__applicationInsights__httpAutoCollectionOptions__enableW3CDistributedTracing",
+    "value": "true",
+    "slotSetting": false
+  },
+  {
+    "name": "AzureFunctionsJobHost__logging__applicationInsights__httpAutoCollectionOptions__enableResponseHeaderInjection",
+    "value": "true",
+    "slotSetting": false
+  },
+  {
+    "name": "AzureFunctionsJobHost__logging__fileLoggingMode",
+    "value": "debugOnly",
+    "slotSetting": false
+  },
+  {
+    "name": "AzureFunctionsJobHost__managedDependency__enabled",
+    "value": "true",
+    "slotSetting": false
+  },
+  {
+    "name": "AzureFunctionsJobHost__customHandler__enableForwardingHttpRequest",
+    "value": "false",
+    "slotSetting": false
+  },
+  {
+    "name": "AzureFunctionsJobHost__concurrency__dynamicConcurrencyEnabled",
+    "value": "true",
+    "slotSetting": false
+  },
+  {
+    "name": "AzureFunctionsJobHost__concurrency__snapshotPersistenceEnabled",
+    "value": "true",
+    "slotSetting": false
+  },
+  {
+    "name": "AzureFunctionsJobHost__sendCanceledInvocationsToWorker",
+    "value": "true",
+    "slotSetting": false
+  }
+]
