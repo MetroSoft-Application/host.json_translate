@@ -61,6 +61,7 @@
     - [singleton.listenerLockPeriod](#singletonlistenerlockperiod)
     - [singleton.listenerLockRecoveryPollingInterval](#singletonlistenerlockrecoverypollinginterval)
     - [singleton.lockAcquisitionTimeout](#singletonlockacquisitiontimeout)
+    - [singleton.lockAcquisitionPollingInterval](#singletonlockacquisitionpollinginterval)
   - [ヘルスモニター設定](#ヘルスモニター設定)
     - [healthMonitor.enabled](#healthmonitorenabled)
     - [healthMonitor.healthCheckInterval](#healthmonitorhealthcheckinterval)
@@ -77,6 +78,8 @@
     - [extensions.queues.batchSize](#extensionsqueuesbatchsize)
     - [extensions.queues.maxDequeueCount](#extensionsqueuesmaxdequeuecount)
     - [extensions.queues.visibilityTimeout](#extensionsqueuesvisibilitytimeout)
+    - [extensions.queues.newBatchThreshold](#extensionsqueuesnewbatchthreshold)
+    - [extensions.queues.messageEncoding](#extensionsqueuesmessageencoding)
   - [Durable Functions設定](#durable-functions設定)
     - [extensions.durableTask.hubName](#extensionsdurabletaskhubname)
     - [extensions.durableTask.storageProvider.controlQueueBatchSize](#extensionsdurabletaskstorageprovidercontrolqueuebatchsize)
@@ -95,6 +98,8 @@
     - [extensions.durableTask.notifications.eventGrid.publishEventTypes](#extensionsdurabletasknotificationseventgridpublisheventtypes)
     - [extensions.durableTask.maxConcurrentActivityFunctions](#extensionsdurabletaskmaxconcurrentactivityfunctions)
     - [extensions.durableTask.maxConcurrentOrchestratorFunctions](#extensionsdurabletaskmaxconcurrentorchestratorfunctions)
+    - [extensions.durableTask.extendedSessionsEnabled](#extensionsdurabletaskextendedsessionsenabled)
+    - [extensions.durableTask.extendedSessionIdleTimeoutInSeconds](#extensionsdurabletaskextendedsessionidletimeoutinseconds)
     - [extensions.durableTask.useAppLease](#extensionsdurabletaskuseapplease)
     - [extensions.durableTask.useGracefulShutdown](#extensionsdurabletaskusegracefulshutdown)
     - [extensions.durableTask.maxEntityOperationBatchSize](#extensionsdurabletaskmaxentityoperationbatchsize)
@@ -102,6 +107,7 @@
   - [Cosmos DB設定](#cosmos-db設定)
     - [extensions.cosmosDB.connectionMode](#extensionscosmosdbconnectionmode)
     - [extensions.cosmosDB.protocol](#extensionscosmosdbprotocol)
+    - [extensions.cosmosDB.leaseOptions.leasePrefix](#extensionscosmosdbleaseoptionsleaseprefix)
   - [Service Bus設定](#service-bus設定)
     - [extensions.serviceBus.transportType](#extensionsservicebustransporttype)
     - [extensions.serviceBus.prefetchCount](#extensionsservicebusprefetchcount)
@@ -170,6 +176,7 @@
     - [logging.applicationInsights.enablePerformanceCountersCollection](#loggingapplicationinsightsenableperformancecounterscollection)
     - [logging.applicationInsights.httpAutoCollectionOptions.enableHttpTriggerExtendedInfoCollection](#loggingapplicationinsightshttpautocollectionoptionsenablehttptriggerextendedinfocollection)
     - [logging.applicationInsights.httpAutoCollectionOptions.enableResponseHeaderInjection](#loggingapplicationinsightshttpautocollectionoptionsenableresponseheaderinjection)
+    - [logging.applicationInsights.httpAutoCollectionOptions.enableW3CDistributedTracing](#loggingapplicationinsightshttpautocollectionoptionsenablew3cdistributedtracing)
     - [logging.fileLoggingMode](#loggingfileloggingmode)
     - [logging.console.isEnabled](#loggingconsoleisenabled)
     - [extensions.applicationInsights.enableLiveMetrics](#extensionsapplicationinsightsenablelivemetrics)
@@ -198,6 +205,8 @@
 
 ### extensionBundle.id
 
+**スキーマ参照**: [host_schema_translated.json:652](host_schema_translated.json#L652)
+
 **説明**: 拡張バンドルのID
 
 **デフォルト値**: `Microsoft.Azure.Functions.ExtensionBundle`
@@ -225,6 +234,8 @@
 ---
 
 ### extensionBundle.version
+
+**スキーマ参照**: [host_schema_translated.json:657](host_schema_translated.json#L657)
 
 **説明**: 拡張バンドルのバージョン範囲
 
@@ -263,6 +274,8 @@
 
 ### aggregator.batchSize
 
+**スキーマ参照**: [host_schema_translated.json:9](host_schema_translated.json#L9)
+
 **説明**: 集約の最大バッチサイズ。この値に到達すると、フラッシュタイムアウトの前でもすべての値がフラッシュされます。
 
 **デフォルト値**: `1000`
@@ -295,6 +308,8 @@
 ---
 
 ### aggregator.flushTimeout
+
+**スキーマ参照**: [host_schema_translated.json:14](host_schema_translated.json#L14)
 
 **説明**: 集約期間。アグリゲーターは、この値に基づいて定期的にフラッシュします。
 
@@ -330,6 +345,8 @@
 ## 関数タイムアウト設定
 
 ### functionTimeout
+
+**スキーマ参照**: [host_schema_translated.json:30](host_schema_translated.json#L30)
 
 **説明**: すべての関数のタイムアウト期間を示す値。
 
@@ -370,6 +387,8 @@
 
 ### singleton.lockPeriod
 
+**スキーマ参照**: [host_schema_translated.json:57](host_schema_translated.json#L57)
+
 **説明**: 関数レベルのロックが使用される期間（自動更新されます）。
 
 **デフォルト値**: `00:00:15` (15秒)
@@ -403,6 +422,8 @@
 
 ### singleton.listenerLockPeriod
 
+**スキーマ参照**: [host_schema_translated.json:61](host_schema_translated.json#L61)
+
 **説明**: リスナーがロックされる期間。
 
 **デフォルト値**: `00:01:00` (1分)
@@ -431,6 +452,8 @@
 
 ### singleton.listenerLockRecoveryPollingInterval
 
+**スキーマ参照**: [host_schema_translated.json:66](host_schema_translated.json#L66)
+
 **説明**: リスナーロックが起動時に取得できなかった場合、リスナーロックリカバリに使用される時間間隔。
 
 **デフォルト値**: `00:01:00` (1分)
@@ -458,6 +481,8 @@
 ---
 
 ### singleton.lockAcquisitionTimeout
+
+**スキーマ参照**: [host_schema_translated.json:71](host_schema_translated.json#L71)
 
 **説明**: ランタイムがロックを取得しようとする最大時間。
 
@@ -490,11 +515,48 @@
 
 ---
 
+### singleton.lockAcquisitionPollingInterval
+
+**スキーマ参照**: [host_schema_translated.json:76](host_schema_translated.json#L76)
+
+**説明**: ロック取得の試み間の間隔。
+
+**デフォルト値**: 未設定
+
+**環境変数名**: `AzureFunctionsJobHost__singleton__lockAcquisitionPollingInterval`
+
+**設定例（Azure Portal）**:
+```json
+{
+  "name": "AzureFunctionsJobHost__singleton__lockAcquisitionPollingInterval",
+  "value": "00:00:05",
+  "slotSetting": false
+}
+```
+
+**host.jsonでの設定**:
+```json
+{
+  "singleton": {
+    "lockAcquisitionPollingInterval": "00:00:05"
+  }
+}
+```
+
+**推奨設定**:
+- 高頻度ポーリング: `00:00:01` (1秒)
+- 標準: `00:00:05` (5秒)
+- 低頻度ポーリング: `00:00:10` (10秒)
+
+---
+
 ## ヘルスモニター設定
 
 関数ホストヘルスモニターの構成設定です。ホストの健全性を監視し、問題がある場合は自動的にリサイクルします。
 
 ### healthMonitor.enabled
+
+**スキーマ参照**: [host_schema_translated.json:88](host_schema_translated.json#L88)
 
 **説明**: ヘルスモニター機能が有効になっているかどうかを指定します。
 
@@ -529,6 +591,8 @@
 
 ### healthMonitor.healthCheckInterval
 
+**スキーマ参照**: [host_schema_translated.json:92](host_schema_translated.json#L92)
+
 **説明**: 周期的なバックグラウンドヘルスチェック間の時間間隔。
 
 **デフォルト値**: `00:00:10` (10秒)
@@ -561,6 +625,8 @@
 ---
 
 ### healthMonitor.healthCheckWindow
+
+**スキーマ参照**: [host_schema_translated.json:97](host_schema_translated.json#L97)
 
 **説明**: healthCheckThreshold設定と組み合わせて使用されるスライドタイムウィンドウ。
 
@@ -595,6 +661,8 @@
 
 ### healthMonitor.healthCheckThreshold
 
+**スキーマ参照**: [host_schema_translated.json:102](host_schema_translated.json#L102)
+
 **説明**: ホストのリサイクルが開始される前に、ヘルスチェックが失敗する可能性がある最大回数。
 
 **デフォルト値**: `6`
@@ -627,6 +695,8 @@
 ---
 
 ### healthMonitor.counterThreshold
+
+**スキーマ参照**: [host_schema_translated.json:107](host_schema_translated.json#L107)
 
 **説明**: パフォーマンスカウンターが不健康と見なされるしきい値。
 
@@ -665,6 +735,8 @@ HTTPトリガーの構成設定です。
 
 ### extensions.http.routePrefix
 
+**スキーマ参照**: [host_schema_translated.json:123](host_schema_translated.json#L123)
+
 **説明**: すべてのルートに適用されるデフォルトのルートプレフィックスを定義します。空の文字列を使用してプレフィックスを削除します。
 
 **デフォルト値**: `api`
@@ -699,6 +771,8 @@ HTTPトリガーの構成設定です。
 ---
 
 ### extensions.http.maxConcurrentRequests
+
+**スキーマ参照**: [host_schema_translated.json:128](host_schema_translated.json#L128)
 
 **説明**: 並行して実行されるHTTP関数の最大数を定義します。
 
@@ -736,6 +810,8 @@ HTTPトリガーの構成設定です。
 
 ### extensions.http.maxOutstandingRequests
 
+**スキーマ参照**: [host_schema_translated.json:133](host_schema_translated.json#L133)
+
 **説明**: いつでも保持される未解決のリクエストの最大数を定義します。
 
 **デフォルト値**: `-1` (無制限)
@@ -769,6 +845,8 @@ HTTPトリガーの構成設定です。
 ---
 
 ### extensions.http.dynamicThrottlesEnabled
+
+**スキーマ参照**: [host_schema_translated.json:138](host_schema_translated.json#L138)
 
 **説明**: 動的ホストカウンターチェックを有効にする必要があるかどうかを示します。
 
@@ -808,6 +886,8 @@ Azure Storage Queueトリガーの構成設定です。
 
 ### extensions.queues.maxPollingInterval
 
+**スキーマ参照**: [host_schema_translated.json:220](host_schema_translated.json#L220)
+
 **説明**: キューポーリング間の最大間隔。最小は00:00:00.100（100ミリ秒）です。
 
 **デフォルト値**: `00:00:02` (2秒)
@@ -842,6 +922,8 @@ Azure Storage Queueトリガーの構成設定です。
 ---
 
 ### extensions.queues.batchSize
+
+**スキーマ参照**: [host_schema_translated.json:231](host_schema_translated.json#L231)
 
 **説明**: 関数ランタイムが同時に取得し、並行して処理するキューメッセージの数。
 
@@ -878,6 +960,8 @@ Azure Storage Queueトリガーの構成設定です。
 
 ### extensions.queues.maxDequeueCount
 
+**スキーマ参照**: [host_schema_translated.json:238](host_schema_translated.json#L238)
+
 **説明**: メッセージを毒キューに移動する前に処理を試みる回数。
 
 **デフォルト値**: `5`
@@ -913,6 +997,8 @@ Azure Storage Queueトリガーの構成設定です。
 
 ### extensions.queues.visibilityTimeout
 
+**スキーマ参照**: [host_schema_translated.json:225](host_schema_translated.json#L225)
+
 **説明**: メッセージの処理が失敗したときの再試行間の時間間隔。
 
 **デフォルト値**: `00:00:00` (デフォルト動作)
@@ -946,11 +1032,85 @@ Azure Storage Queueトリガーの構成設定です。
 
 ---
 
+### extensions.queues.newBatchThreshold
+
+**スキーマ参照**: [host_schema_translated.json:201](host_schema_translated.json#L201), [host_schema_translated.json:241](host_schema_translated.json#L241)
+
+**説明**: メッセージの新しいバッチが取得されるしきい値。
+
+**デフォルト値**: `batchSize/2` (動的に計算)
+
+**環境変数名**: `AzureFunctionsJobHost__extensions__queues__newBatchThreshold`
+
+**設定例（Azure Portal）**:
+```json
+{
+  "name": "AzureFunctionsJobHost__extensions__queues__newBatchThreshold",
+  "value": "8",
+  "slotSetting": false
+}
+```
+
+**host.jsonでの設定**:
+```json
+{
+  "extensions": {
+    "queues": {
+      "newBatchThreshold": 8
+    }
+  }
+}
+```
+
+**推奨設定**:
+- デフォルト: 未設定 (batchSize/2が自動使用される)
+- カスタム: batchSizeが16の場合は8など
+
+---
+
+### extensions.queues.messageEncoding
+
+**スキーマ参照**: [host_schema_translated.json:245](host_schema_translated.json#L245)
+
+**説明**: メッセージのエンコード形式。この設定は拡張バージョン5.0.0以上でのみ使用可能です。
+
+**デフォルト値**: 未設定
+
+**環境変数名**: `AzureFunctionsJobHost__extensions__queues__messageEncoding`
+
+**設定例（Azure Portal）**:
+```json
+{
+  "name": "AzureFunctionsJobHost__extensions__queues__messageEncoding",
+  "value": "base64",
+  "slotSetting": false
+}
+```
+
+**host.jsonでの設定**:
+```json
+{
+  "extensions": {
+    "queues": {
+      "messageEncoding": "base64"
+    }
+  }
+}
+```
+
+**推奨設定**:
+- Base64エンコード: `base64` (レガシー互換性)
+- エンコードなし: `none` (拡張v5.0.0以上)
+
+---
+
 ## Durable Functions設定
 
 Durable Functionsのオーケストレーション/アクティビティトリガーの構成設定です。
 
 ### extensions.durableTask.hubName
+
+**スキーマ参照**: [host_schema_translated.json:1522](host_schema_translated.json#L1522)
 
 **説明**: 代替タスクハブ名。同じストレージバックエンドを使用している場合でも、複数のDurable Functionsアプリケーションを互いに分離できます。
 
@@ -987,6 +1147,8 @@ Durable Functionsのオーケストレーション/アクティビティトリ�
 
 ### extensions.durableTask.storageProvider.controlQueueBatchSize
 
+**スキーマ参照**: [host_schema_translated.json:272](host_schema_translated.json#L272)
+
 **説明**: 一度にコントロールキューから引き出すメッセージの数。
 
 **デフォルト値**: `32`
@@ -1018,6 +1180,8 @@ Durable Functionsのオーケストレーション/アクティビティトリ�
 ---
 
 ### extensions.durableTask.storageProvider.controlQueueBufferThreshold
+
+**スキーマ参照**: [host_schema_translated.json:277](host_schema_translated.json#L277)
 
 **説明**: 一度にメモリでバッファリングできるコントロールキューメッセージの数。
 
@@ -1051,6 +1215,8 @@ Durable Functionsのオーケストレーション/アクティビティトリ�
 
 ### extensions.durableTask.storageProvider.controlQueueVisibilityTimeout
 
+**スキーマ参照**: [host_schema_translated.json:282](host_schema_translated.json#L282)
+
 **説明**: デキューされたコントロールキューメッセージの可視性タイムアウト。
 
 **デフォルト値**: `00:05:00` (5分)
@@ -1082,6 +1248,8 @@ Durable Functionsのオーケストレーション/アクティビティトリ�
 ---
 
 ### extensions.durableTask.storageProvider.maxQueuePollingInterval
+
+**スキーマ参照**: [host_schema_translated.json:287](host_schema_translated.json#L287)
 
 **説明**: 最大制御および作業項目キューポーリング間隔。値が高いとメッセージ処理のレイテンシが高くなる可能性があります。
 
@@ -1120,6 +1288,8 @@ Durable Functionsのオーケストレーション/アクティビティトリ�
 
 ### extensions.durableTask.storageProvider.partitionCount
 
+**スキーマ参照**: [host_schema_translated.json:292](host_schema_translated.json#L292)
+
 **説明**: 制御キューのパーティションカウント。1〜16の間の正の整数。
 
 **デフォルト値**: `4`
@@ -1157,6 +1327,8 @@ Durable Functionsのオーケストレーション/アクティビティトリ�
 
 ### extensions.durableTask.storageProvider.useLegacyPartitionManagement
 
+**スキーマ参照**: [host_schema_translated.json:306](host_schema_translated.json#L306)
+
 **説明**: falseに設定すると、パーティション管理アルゴリズムを使用して、スケーリング時に関数実行の重複の可能性を減らします。
 
 **デフォルト値**: `false`
@@ -1189,6 +1361,8 @@ Durable Functionsのオーケストレーション/アクティビティトリ�
 
 ### extensions.durableTask.storageProvider.workItemQueueVisibilityTimeout
 
+**スキーマ参照**: [host_schema_translated.json:311](host_schema_translated.json#L311)
+
 **説明**: デキューされた作業項目キューメッセージの可視性タイムアウト。
 
 **デフォルト値**: `00:05:00` (5分)
@@ -1220,6 +1394,8 @@ Durable Functionsのオーケストレーション/アクティビティトリ�
 ---
 
 ### extensions.durableTask.tracing.traceInputsAndOutputs
+
+**スキーマ参照**: [host_schema_translated.json:322](host_schema_translated.json#L322)
 
 **説明**: オーケストレーション・アクティビティ関数呼び出しの入力と出力をトレースするかどうか。関数実行イベントをトレースする際のデフォルトの動作は、オーケストレーション・アクティビティ関数呼び出しのシリアル化された入力と出力にバイト数を含めます。この動作は、ログを膨張させたり不注意に機密情報をログに公開することなく、入力と出力がどのように見えるかについての最小限の情報を提供します。このプロパティをtrueに設定すると、関数ログのデフォルトは関数の入力と出力の内容全体をログに記録します。
 
@@ -1257,6 +1433,8 @@ Durable Functionsのオーケストレーション/アクティビティトリ�
 
 ### extensions.durableTask.tracing.traceReplayEvents
 
+**スキーマ参照**: [host_schema_translated.json:327](host_schema_translated.json#L327)
+
 **説明**: オーケストレーターリプレイイベントをApplication Insightsに書き込むかどうかを示す値。
 
 **デフォルト値**: `false`
@@ -1293,6 +1471,8 @@ Durable Functionsのオーケストレーション/アクティビティトリ�
 
 ### extensions.durableTask.notifications.eventGrid.topicEndpoint
 
+**スキーマ参照**: [host_schema_translated.json:341](host_schema_translated.json#L341)
+
 **説明**: Azure Event Gridカスタムトピックエンドポイントへの URL。このプロパティを設定すると、オーケストレーションライフサイクル通知イベントがこのエンドポイントに公開されます。このプロパティはアプリ設定解決をサポートします。
 
 **デフォルト値**: 空
@@ -1327,6 +1507,8 @@ Durable Functionsのオーケストレーション/アクティビティトリ�
 
 ### extensions.durableTask.notifications.eventGrid.keySettingName
 
+**スキーマ参照**: [host_schema_translated.json:343](host_schema_translated.json#L343)
+
 **説明**: Azure Event Gridカスタムトピックでの認証に使用するキーを含むアプリ設定の名前。
 
 **デフォルト値**: 空
@@ -1360,6 +1542,8 @@ Durable Functionsのオーケストレーション/アクティビティトリ�
 ---
 
 ### extensions.durableTask.notifications.eventGrid.publishRetryCount
+
+**スキーマ参照**: [host_schema_translated.json:349](host_schema_translated.json#L349)
 
 **説明**: Event Gridトピックへの公開が失敗した場合の再試行回数。
 
@@ -1399,6 +1583,8 @@ Durable Functionsのオーケストレーション/アクティビティトリ�
 
 ### extensions.durableTask.notifications.eventGrid.publishRetryInterval
 
+**スキーマ参照**: [host_schema_translated.json:354](host_schema_translated.json#L354)
+
 **説明**: Event Grid公開の再試行間隔（hh:mm:ss形式）。
 
 **デフォルト値**: `00:05:00` (5分)
@@ -1433,6 +1619,8 @@ Durable Functionsのオーケストレーション/アクティビティトリ�
 
 ### extensions.durableTask.notifications.eventGrid.publishEventTypes
 
+**スキーマ参照**: [host_schema_translated.json:359](host_schema_translated.json#L359)
+
 **説明**: このリストに含まれるEvent Gridライフサイクルイベントタイプのみが公開されます。指定しない場合は、すべてのイベントタイプが公開されます。許可される値: Started、Pending、Failed、Terminated。
 
 **デフォルト値**: すべてのイベントタイプ
@@ -1466,6 +1654,8 @@ Durable Functionsのオーケストレーション/アクティビティトリ�
 ---
 
 ### extensions.durableTask.maxConcurrentActivityFunctions
+
+**スキーマ参照**: [host_schema_translated.json:380](host_schema_translated.json#L380)
 
 **説明**: 単一ホストインスタンスで同時に処理できるアクティビティ関数の最大数。
 
@@ -1502,6 +1692,8 @@ Durable Functionsのオーケストレーション/アクティビティトリ�
 
 ### extensions.durableTask.maxConcurrentOrchestratorFunctions
 
+**スキーマ参照**: [host_schema_translated.json:385](host_schema_translated.json#L385)
+
 **説明**: 単一ホストインスタンスで同時に処理できるオーケストレーター関数の最大数。
 
 **デフォルト値**: `10`
@@ -1535,7 +1727,82 @@ Durable Functionsのオーケストレーション/アクティビティトリ�
 
 ---
 
+### extensions.durableTask.extendedSessionsEnabled
+
+**スキーマ参照**: [host_schema_translated.json:391](host_schema_translated.json#L391)
+
+**説明**: 拡張セッションを有効にするかどうか。有効にすると、オーケストレーターインスタンスがメモリに保持され、新しいメッセージを処理できます。
+
+**デフォルト値**: 未設定
+
+**環境変数名**: `AzureFunctionsJobHost__extensions__durableTask__extendedSessionsEnabled`
+
+**設定例（Azure Portal）**:
+```json
+{
+  "name": "AzureFunctionsJobHost__extensions__durableTask__extendedSessionsEnabled",
+  "value": "true",
+  "slotSetting": false
+}
+```
+
+**host.jsonでの設定**:
+```json
+{
+  "extensions": {
+    "durableTask": {
+      "extendedSessionsEnabled": true
+    }
+  }
+}
+```
+
+**推奨設定**:
+- 高スループット: `true` (メモリ使用量増加)
+- 標準: `false` または未設定
+
+---
+
+### extensions.durableTask.extendedSessionIdleTimeoutInSeconds
+
+**スキーマ参照**: [host_schema_translated.json:394](host_schema_translated.json#L394)
+
+**説明**: 拡張セッションのアイドルタイムアウト(秒)。
+
+**デフォルト値**: 未設定
+
+**環境変数名**: `AzureFunctionsJobHost__extensions__durableTask__extendedSessionIdleTimeoutInSeconds`
+
+**設定例（Azure Portal）**:
+```json
+{
+  "name": "AzureFunctionsJobHost__extensions__durableTask__extendedSessionIdleTimeoutInSeconds",
+  "value": "30",
+  "slotSetting": false
+}
+```
+
+**host.jsonでの設定**:
+```json
+{
+  "extensions": {
+    "durableTask": {
+      "extendedSessionIdleTimeoutInSeconds": 30
+    }
+  }
+}
+```
+
+**推奨設定**:
+- 短いタイムアウト: `10` (10秒)
+- 標準: `30` (30秒)
+- 長いタイムアウト: `60` (1分)
+
+---
+
 ### extensions.durableTask.useAppLease
+
+**スキーマ参照**: [host_schema_translated.json:396](host_schema_translated.json#L396)
 
 **説明**: trueに設定すると、アプリは、タスクハブパーティションのみを処理するホストインスタンスのアプリレベルブロブリースを取得します。
 
@@ -1566,6 +1833,8 @@ Durable Functionsのオーケストレーション/アクティビティトリ�
 ---
 
 ### extensions.durableTask.useGracefulShutdown
+
+**スキーマ参照**: [host_schema_translated.json:401](host_schema_translated.json#L401)
 
 **説明**: ホストシャットダウンの確率を減らすためにグレースフルシャットダウンを有効にして、インプロセス関数実行でエラーが発生しないようにします。
 
@@ -1601,6 +1870,8 @@ Durable Functionsのオーケストレーション/アクティビティトリ�
 
 ### extensions.durableTask.maxEntityOperationBatchSize
 
+**スキーマ参照**: [host_schema_translated.json:406](host_schema_translated.json#L406)
+
 **説明**: バッチとして一緒に処理されるエンティティ操作の最大数。
 
 **デフォルト値**: `50`
@@ -1634,6 +1905,8 @@ Durable Functionsのオーケストレーション/アクティビティトリ�
 ---
 
 ### extensions.durableTask.useTablePartitionManagement
+
+**スキーマ参照**: [host_schema_translated.json:410](host_schema_translated.json#L410)
 
 **説明**: Durable Functions v2.10.0で導入された改善されたパーティション管理ロジックを使用するかどうか。パーティション管理ロジックにより、異なるインスタンス間での作業の配分、およびスケールインとスケールアウトに対する応答性が向上します。
 
@@ -1673,6 +1946,8 @@ Cosmos DBトリガーの構成設定です。
 
 ### extensions.cosmosDB.connectionMode
 
+**スキーマ参照**: [host_schema_translated.json:421](host_schema_translated.json#L421)
+
 **説明**: サービスへの接続に使用される接続モード。使用可能なオプションは、DirectとGatewayです。
 
 **デフォルト値**: `Gateway`
@@ -1707,6 +1982,8 @@ Cosmos DBトリガーの構成設定です。
 
 ### extensions.cosmosDB.protocol
 
+**スキーマ参照**: [host_schema_translated.json:429](host_schema_translated.json#L429)
+
 **説明**: サービスへの接続に使用される接続プロトコル。使用可能なオプションは、HttpsとTcpです。
 
 **デフォルト値**: `Https`
@@ -1739,11 +2016,51 @@ Cosmos DBトリガーの構成設定です。
 
 ---
 
+### extensions.cosmosDB.leaseOptions.leasePrefix
+
+**スキーマ参照**: [host_schema_translated.json:466](host_schema_translated.json#L466)
+
+**説明**: アプリ内のすべての機能で使用するリースプレフィックス。
+
+**デフォルト値**: 未設定
+
+**環境変数名**: `AzureFunctionsJobHost__extensions__cosmosDB__leaseOptions__leasePrefix`
+
+**設定例（Azure Portal）**:
+```json
+{
+  "name": "AzureFunctionsJobHost__extensions__cosmosDB__leaseOptions__leasePrefix",
+  "value": "myapp",
+  "slotSetting": false
+}
+```
+
+**host.jsonでの設定**:
+```json
+{
+  "extensions": {
+    "cosmosDB": {
+      "leaseOptions": {
+        "leasePrefix": "myapp"
+      }
+    }
+  }
+}
+```
+
+**推奨設定**:
+- マルチアプリ環境: アプリ名やスロット名を含むプレフィックスを設定
+- 単一アプリ環境: 未設定
+
+---
+
 ## Service Bus設定
 
 Azure Service Busトリガーの構成設定です。
 
 ### extensions.serviceBus.transportType
+
+**スキーマ参照**: [host_schema_translated.json:1292](host_schema_translated.json#L1292)
 
 **説明**: Service Busとの通信に使用するトランスポートの種類。
 
@@ -1778,6 +2095,8 @@ Azure Service Busトリガーの構成設定です。
 ---
 
 ### extensions.serviceBus.prefetchCount
+
+**スキーマ参照**: [host_schema_translated.json:1307](host_schema_translated.json#L1307)
 
 **説明**: 基になるMessageReceiverが使用する既定のPrefetchCountを取得または設定します。
 
@@ -1815,6 +2134,8 @@ Azure Service Busトリガーの構成設定です。
 
 ### extensions.serviceBus.autoCompleteMessages
 
+**スキーマ参照**: [host_schema_translated.json:1305](host_schema_translated.json#L1305)
+
 **説明**: トリガーがメッセージを自動的に完了を呼び出すか、または関数コードが完了を手動で呼び出すかどうかを決定する値を取得または設定します。
 
 **デフォルト値**: `true`
@@ -1848,6 +2169,8 @@ Azure Service Busトリガーの構成設定です。
 ---
 
 ### extensions.serviceBus.maxAutoLockRenewalDuration
+
+**スキーマ参照**: [host_schema_translated.json:1310](host_schema_translated.json#L1310)
 
 **説明**: メッセージロックが自動的に更新される最大期間を取得または設定します。
 
@@ -1884,6 +2207,8 @@ Azure Service Busトリガーの構成設定です。
 
 ### extensions.serviceBus.maxConcurrentCalls
 
+**スキーマ参照**: [host_schema_translated.json:1315](host_schema_translated.json#L1315)
+
 **説明**: メッセージポンプが開始する必要があるコールバックへの同時呼び出しの最大数。
 
 **デフォルト値**: `16`
@@ -1918,6 +2243,8 @@ Azure Service Busトリガーの構成設定です。
 ---
 
 ### extensions.serviceBus.maxConcurrentSessions
+
+**スキーマ参照**: [host_schema_translated.json:1320](host_schema_translated.json#L1320)
 
 **説明**: メッセージポンプが開始する必要がある同時セッションの最大数。
 
@@ -1954,6 +2281,8 @@ Azure Service Busトリガーの構成設定です。
 
 ### extensions.serviceBus.maxMessageBatchSize
 
+**スキーマ参照**: [host_schema_translated.json:1326](host_schema_translated.json#L1326)
+
 **説明**: 単一の関数呼び出しで受信できるメッセージの最大数。
 
 **デフォルト値**: `1000`
@@ -1988,6 +2317,8 @@ Azure Service Busトリガーの構成設定です。
 ---
 
 ### extensions.serviceBus.sessionIdleTimeout
+
+**スキーマ参照**: [host_schema_translated.json:1337](host_schema_translated.json#L1337)
 
 **説明**: セッションアイドルタイムアウト。
 
@@ -2024,6 +2355,8 @@ Azure Service Busトリガーの構成設定です。
 
 ### extensions.serviceBus.clientRetryOptions.mode
 
+**スキーマ参照**: [host_schema_translated.json:1252](host_schema_translated.json#L1252)
+
 **説明**: Service Bus操作失敗時の再試行戦略。
 
 **デフォルト値**: `Exponential`
@@ -2059,6 +2392,8 @@ Azure Service Busトリガーの構成設定です。
 ---
 
 ### extensions.serviceBus.clientRetryOptions.tryTimeout
+
+**スキーマ参照**: [host_schema_translated.json:1260](host_schema_translated.json#L1260)
 
 **説明**: 個別の試行に許可される最大期間。
 
@@ -2097,6 +2432,8 @@ Azure Service Busトリガーの構成設定です。
 
 ### extensions.serviceBus.clientRetryOptions.delay
 
+**スキーマ参照**: [host_schema_translated.json:1265](host_schema_translated.json#L1265)
+
 **説明**: 再試行間の遅延時間。
 
 **デフォルト値**: `00:00:00.8` (0.8秒)
@@ -2133,6 +2470,8 @@ Azure Service Busトリガーの構成設定です。
 ---
 
 ### extensions.serviceBus.clientRetryOptions.maxDelay
+
+**スキーマ参照**: [host_schema_translated.json:1271](host_schema_translated.json#L1271)
 
 **説明**: 再試行間の最大遅延時間。
 
@@ -2171,6 +2510,8 @@ Azure Service Busトリガーの構成設定です。
 
 ### extensions.serviceBus.clientRetryOptions.maxRetries
 
+**スキーマ参照**: [host_schema_translated.json:1277](host_schema_translated.json#L1277)
+
 **説明**: 最大再試行回数。
 
 **デフォルト値**: `3`
@@ -2207,6 +2548,8 @@ Azure Service Busトリガーの構成設定です。
 ---
 
 ### extensions.serviceBus.processorOptions.maxConcurrentCalls
+
+**スキーマ参照**: [host_schema_translated.json:1315](host_schema_translated.json#L1315)
 
 **説明**: プロセッサが開始する必要があるコールバックへの同時呼び出しの最大数。
 
@@ -2245,6 +2588,8 @@ Azure Service Busトリガーの構成設定です。
 
 ### extensions.serviceBus.processorOptions.prefetchCount
 
+**スキーマ参照**: [host_schema_translated.json:1307](host_schema_translated.json#L1307)
+
 **説明**: プロセッサが使用するプリフェッチカウント。
 
 **デフォルト値**: `0`
@@ -2282,6 +2627,8 @@ Azure Service Busトリガーの構成設定です。
 
 ### extensions.serviceBus.processorOptions.autoCompleteMessages
 
+**スキーマ参照**: [host_schema_translated.json:1305](host_schema_translated.json#L1305)
+
 **説明**: プロセッサがメッセージを自動的に完了するかどうか。
 
 **デフォルト値**: `true`
@@ -2313,6 +2660,8 @@ Azure Service Busトリガーの構成設定です。
 ---
 
 ### extensions.serviceBus.processorOptions.maxAutoLockRenewalDuration
+
+**スキーマ参照**: [host_schema_translated.json:1310](host_schema_translated.json#L1310)
 
 **説明**: メッセージロックが自動的に更新される最大期間。
 
@@ -2346,6 +2695,8 @@ Azure Service Busトリガーの構成設定です。
 
 ### extensions.serviceBus.sessionProcessorOptions.maxConcurrentSessions
 
+**スキーマ参照**: [host_schema_translated.json:1320](host_schema_translated.json#L1320)
+
 **説明**: セッションプロセッサが開始する必要がある同時セッションの最大数。
 
 **デフォルト値**: `8`
@@ -2377,6 +2728,8 @@ Azure Service Busトリガーの構成設定です。
 ---
 
 ### extensions.serviceBus.sessionProcessorOptions.maxConcurrentCallsPerSession
+
+**スキーマ参照**: [host_schema_translated.json:1320](host_schema_translated.json#L1320)
 
 **説明**: セッションごとのコールバックへの同時呼び出しの最大数。
 
@@ -2414,6 +2767,8 @@ Azure Service Busトリガーの構成設定です。
 
 ### extensions.serviceBus.sessionProcessorOptions.sessionIdleTimeout
 
+**スキーマ参照**: [host_schema_translated.json:1337](host_schema_translated.json#L1337)
+
 **説明**: セッションアイドルタイムアウト。
 
 **デフォルト値**: 未設定
@@ -2445,6 +2800,8 @@ Azure Service Busトリガーの構成設定です。
 ---
 
 ### extensions.serviceBus.sessionProcessorOptions.autoCompleteMessages
+
+**スキーマ参照**: [host_schema_translated.json:1305](host_schema_translated.json#L1305)
 
 **説明**: セッションプロセッサがメッセージを自動的に完了するかどうか。
 
@@ -2478,6 +2835,8 @@ Azure Service Busトリガーの構成設定です。
 
 ### extensions.serviceBus.sessionProcessorOptions.maxAutoLockRenewalDuration
 
+**スキーマ参照**: [host_schema_translated.json:1310](host_schema_translated.json#L1310)
+
 **説明**: セッションメッセージロックが自動的に更新される最大期間。
 
 **デフォルト値**: `00:05:00` (5分)
@@ -2510,6 +2869,8 @@ Azure Service Busトリガーの構成設定です。
 
 ### extensions.serviceBus.enableCrossEntityTransactions
 
+**スキーマ参照**: [host_schema_translated.json:1342](host_schema_translated.json#L1342)
+
 **説明**: エンティティ間のトランザクションを有効にするかどうか。
 
 **デフォルト値**: `false`
@@ -2539,6 +2900,8 @@ Azure Service Busトリガーの構成設定です。
 ---
 
 ### extensions.serviceBus.maxBatchWaitTime
+
+**スキーマ参照**: [host_schema_translated.json:1331](host_schema_translated.json#L1331)
 
 **説明**: バッチを待機する最大時間。
 
@@ -2575,6 +2938,8 @@ Azure Service Busトリガーの構成設定です。
 
 ### extensions.serviceBus.batchOptions.autoComplete
 
+**スキーマ参照**: [host_schema_translated.json:1233](host_schema_translated.json#L1233)
+
 **説明**: バッチ処理でメッセージを自動完了するかどうか。
 
 **デフォルト値**: `true`
@@ -2606,6 +2971,8 @@ Azure Service Busトリガーの構成設定です。
 ---
 
 ### extensions.serviceBus.batchOptions.maxMessageCount
+
+**スキーマ参照**: [host_schema_translated.json:1224](host_schema_translated.json#L1224)
 
 **説明**: バッチあたりの最大メッセージ数。
 
@@ -2639,6 +3006,8 @@ Azure Service Busトリガーの構成設定です。
 
 ### extensions.serviceBus.batchOptions.operationTimeout
 
+**スキーマ参照**: [host_schema_translated.json:1228](host_schema_translated.json#L1228)
+
 **説明**: バッチ操作のタイムアウト。
 
 **デフォルト値**: `00:01:00` (1分)
@@ -2670,6 +3039,8 @@ Azure Service Busトリガーの構成設定です。
 ---
 
 ### extensions.serviceBus.messageHandlerOptions.autoComplete
+
+**スキーマ参照**: [host_schema_translated.json:1188](host_schema_translated.json#L1188)
 
 **説明**: メッセージハンドラーでメッセージを自動完了するかどうか。
 
@@ -2703,6 +3074,8 @@ Azure Service Busトリガーの構成設定です。
 
 ### extensions.serviceBus.messageHandlerOptions.maxAutoRenewDuration
 
+**スキーマ参照**: [host_schema_translated.json:1182](host_schema_translated.json#L1182)
+
 **説明**: メッセージハンドラーでロックを自動更新する最大期間。
 
 **デフォルト値**: `00:05:00` (5分)
@@ -2734,6 +3107,8 @@ Azure Service Busトリガーの構成設定です。
 ---
 
 ### extensions.serviceBus.messageHandlerOptions.maxConcurrentCalls
+
+**スキーマ参照**: [host_schema_translated.json:1176](host_schema_translated.json#L1176)
 
 **説明**: メッセージハンドラーの最大同時呼び出し数。
 
@@ -2767,6 +3142,8 @@ Azure Service Busトリガーの構成設定です。
 
 ### extensions.serviceBus.sessionHandlerOptions.autoComplete
 
+**スキーマ参照**: [host_schema_translated.json:1204](host_schema_translated.json#L1204)
+
 **説明**: セッションハンドラーでメッセージを自動完了するかどうか。
 
 **デフォルト値**: `true`
@@ -2798,6 +3175,8 @@ Azure Service Busトリガーの構成設定です。
 ---
 
 ### extensions.serviceBus.sessionHandlerOptions.maxAutoRenewDuration
+
+**スキーマ参照**: [host_schema_translated.json:1198](host_schema_translated.json#L1198)
 
 **説明**: セッションハンドラーでロックを自動更新する最大期間。
 
@@ -2831,6 +3210,8 @@ Azure Service Busトリガーの構成設定です。
 
 ### extensions.serviceBus.sessionHandlerOptions.maxConcurrentSessions
 
+**スキーマ参照**: [host_schema_translated.json:1210](host_schema_translated.json#L1210)
+
 **説明**: セッションハンドラーの最大同時セッション数。
 
 **デフォルト値**: `8`
@@ -2863,9 +3244,11 @@ Azure Service Busトリガーの構成設定です。
 
 ### extensions.serviceBus.sessionHandlerOptions.messageWaitTimeout
 
+**スキーマ参照**: [host_schema_translated.json:1215](host_schema_translated.json#L1215)
+
 **説明**: セッションハンドラーがメッセージを待機するタイムアウト。
 
-**デフォルト値**: `00:00:05` (5秒)
+**デフォルト値**: `00:00:30` (30秒)
 
 **環境変数名**: `AzureFunctionsJobHost__extensions__serviceBus__sessionHandlerOptions__messageWaitTimeout`
 
@@ -2873,7 +3256,7 @@ Azure Service Busトリガーの構成設定です。
 ```json
 {
   "name": "AzureFunctionsJobHost__extensions__serviceBus__sessionHandlerOptions__messageWaitTimeout",
-  "value": "00:00:05",
+  "value": "00:00:30",
   "slotSetting": false
 }
 ```
@@ -2884,7 +3267,7 @@ Azure Service Busトリガーの構成設定です。
   "extensions": {
     "serviceBus": {
       "sessionHandlerOptions": {
-        "messageWaitTimeout": "00:00:05"
+        "messageWaitTimeout": "00:00:30"
       }
     }
   }
@@ -2898,6 +3281,8 @@ Azure Service Busトリガーの構成設定です。
 Azure Event Hubsトリガーの構成設定です。
 
 ### extensions.eventHubs.maxEventBatchSize
+
+**スキーマ参照**: [host_schema_translated.json:1364](host_schema_translated.json#L1364)
 
 **説明**: イベントバッチごとに受信するイベントの最大数。
 
@@ -2934,6 +3319,8 @@ Azure Event Hubsトリガーの構成設定です。
 
 ### extensions.eventHubs.minEventBatchSize
 
+**スキーマ参照**: [host_schema_translated.json:1364](host_schema_translated.json#L1364)
+
 **説明**: イベントバッチごとに受信するイベントの最小数。
 
 **デフォルト値**: `1`
@@ -2963,6 +3350,8 @@ Azure Event Hubsトリガーの構成設定です。
 ---
 
 ### extensions.eventHubs.targetUnprocessedEventThreshold
+
+**スキーマ参照**: [host_schema_translated.json:1358](host_schema_translated.json#L1358)
 
 **説明**: スケーリングを制御するために使用される未処理イベントのしきい値。
 
@@ -2999,6 +3388,8 @@ Azure Event Hubsトリガーの構成設定です。
 
 ### extensions.eventHubs.clientRetryOptions.mode
 
+**スキーマ参照**: [host_schema_translated.json:1420](host_schema_translated.json#L1420)
+
 **説明**: Event Hubs操作失敗時の再試行戦略。
 
 **デフォルト値**: `Exponential`
@@ -3030,6 +3421,8 @@ Azure Event Hubsトリガーの構成設定です。
 ---
 
 ### extensions.eventHubs.clientRetryOptions.tryTimeout
+
+**スキーマ参照**: [host_schema_translated.json:1428](host_schema_translated.json#L1428)
 
 **説明**: 個別の試行に許可される最大期間。
 
@@ -3063,6 +3456,8 @@ Azure Event Hubsトリガーの構成設定です。
 
 ### extensions.eventHubs.clientRetryOptions.delay
 
+**スキーマ参照**: [host_schema_translated.json:1434](host_schema_translated.json#L1434)
+
 **説明**: 再試行間の遅延時間。
 
 **デフォルト値**: `00:00:00.8` (0.8秒)
@@ -3094,6 +3489,8 @@ Azure Event Hubsトリガーの構成設定です。
 ---
 
 ### extensions.eventHubs.clientRetryOptions.maxDelay
+
+**スキーマ参照**: [host_schema_translated.json:1440](host_schema_translated.json#L1440)
 
 **説明**: 再試行間の最大遅延時間。
 
@@ -3127,6 +3524,8 @@ Azure Event Hubsトリガーの構成設定です。
 
 ### extensions.eventHubs.clientRetryOptions.maxRetries
 
+**スキーマ参照**: [host_schema_translated.json:1446](host_schema_translated.json#L1446)
+
 **説明**: 最大再試行回数。
 
 **デフォルト値**: `3`
@@ -3159,9 +3558,11 @@ Azure Event Hubsトリガーの構成設定です。
 
 ### extensions.eventHubs.loadBalancingUpdateInterval
 
+**スキーマ参照**: [host_schema_translated.json:1458](host_schema_translated.json#L1458)
+
 **説明**: 負荷分散の更新間隔。
 
-**デフォルト値**: `00:00:10` (10秒)
+**デフォルト値**: 未設定
 
 **環境変数名**: `AzureFunctionsJobHost__extensions__eventHubs__loadBalancingUpdateInterval`
 
@@ -3194,9 +3595,11 @@ Azure Event Hubsトリガーの構成設定です。
 
 ### extensions.eventHubs.partitionOwnershipExpirationInterval
 
+**スキーマ参照**: [host_schema_translated.json:1464](host_schema_translated.json#L1464)
+
 **説明**: パーティション所有権の有効期限間隔。
 
-**デフォルト値**: `00:00:30` (30秒)
+**デフォルト値**: 未設定
 
 **環境変数名**: `AzureFunctionsJobHost__extensions__eventHubs__partitionOwnershipExpirationInterval`
 
@@ -3223,6 +3626,8 @@ Azure Event Hubsトリガーの構成設定です。
 ---
 
 ### extensions.eventHubs.batchCheckpointFrequency
+
+**スキーマ参照**: [host_schema_translated.json:1370](host_schema_translated.json#L1370)
 
 **説明**: バッチ処理でチェックポイントを作成する頻度。
 
@@ -3253,6 +3658,8 @@ Azure Event Hubsトリガーの構成設定です。
 ---
 
 ### extensions.eventHubs.initialOffsetOptions.type
+
+**スキーマ参照**: [host_schema_translated.json:1401](host_schema_translated.json#L1401)
 
 **説明**: イベント処理の初期オフセットタイプ。
 
@@ -3291,6 +3698,8 @@ Azure Event Hubsトリガーの構成設定です。
 
 ### extensions.eventHubs.prefetchCount
 
+**スキーマ参照**: [host_schema_translated.json:1375](host_schema_translated.json#L1375)
+
 **説明**: プリフェッチするイベントの数。
 
 **デフォルト値**: `300`
@@ -3325,6 +3734,8 @@ Azure Event Hubsトリガーの構成設定です。
 ---
 
 ### extensions.eventHubs.transportType
+
+**スキーマ参照**: [host_schema_translated.json:1380](host_schema_translated.json#L1380)
 
 **説明**: Event Hubsとの通信に使用するトランスポートの種類。
 
@@ -3364,6 +3775,8 @@ Azure Blobsトリガーの構成設定です。
 
 ### extensions.blobs.maxDegreeOfParallelism
 
+**スキーマ参照**: [host_schema_translated.json:1532](host_schema_translated.json#L1532)
+
 **説明**: 各関数呼び出しに対する同時アップロードの数。
 
 **デフォルト値**: `8 * コア数`
@@ -3399,6 +3812,8 @@ Azure Blobsトリガーの構成設定です。
 
 ### extensions.blobs.poisonBlobThreshold
 
+**スキーマ参照**: [host_schema_translated.json:1537](host_schema_translated.json#L1537)
+
 **説明**: Blob処理が失敗した場合に毒メッセージとして扱うまでの試行回数。
 
 **デフォルト値**: `5`
@@ -3432,17 +3847,13 @@ Azure Blobsトリガーの構成設定です。
 
 ---
 
-
-
-
-
-
-
 ## ログ設定
 
 Azure Functionsのログ記録とApplication Insightsの構成設定です。
 
 ### logging.logLevel.default
+
+**スキーマ参照**: [host_schema_translated.json:707](host_schema_translated.json#L707)
 
 **説明**: デフォルトのログレベル。
 
@@ -3479,6 +3890,8 @@ Azure Functionsのログ記録とApplication Insightsの構成設定です。
 
 ### logging.logLevel.Function
 
+**スキーマ参照**: [host_schema_translated.json:720](host_schema_translated.json#L720)
+
 **説明**: Function カテゴリのログレベル。
 
 **デフォルト値**: 未設定
@@ -3508,6 +3921,8 @@ Azure Functionsのログ記録とApplication Insightsの構成設定です。
 ---
 
 ### logging.logLevel.Host.Aggregator
+
+**スキーマ参照**: [host_schema_translated.json:720](host_schema_translated.json#L720)
 
 **説明**: Host.Aggregatorカテゴリのログレベル。
 
@@ -3539,6 +3954,8 @@ Azure Functionsのログ記録とApplication Insightsの構成設定です。
 
 ### logging.logLevel.Host.Results
 
+**スキーマ参照**: [host_schema_translated.json:720](host_schema_translated.json#L720)
+
 **説明**: Host.Resultsカテゴリのログレベル。
 
 **デフォルト値**: 未設定
@@ -3568,6 +3985,8 @@ Azure Functionsのログ記録とApplication Insightsの構成設定です。
 ---
 
 ### logging.applicationInsights.samplingSettings.isEnabled
+
+**スキーマ参照**: [host_schema_translated.json:740](host_schema_translated.json#L740)
 
 **説明**: Application Insightsサンプリングを有効にするかどうか。
 
@@ -3604,6 +4023,8 @@ Azure Functionsのログ記録とApplication Insightsの構成設定です。
 ---
 
 ### logging.applicationInsights.samplingSettings.maxTelemetryItemsPerSecond
+
+**スキーマ参照**: [host_schema_translated.json:745](host_schema_translated.json#L745)
 
 **説明**: 各サーバーホストでログに記録されるテレメトリ項目の最大数/秒。
 
@@ -3642,6 +4063,8 @@ Azure Functionsのログ記録とApplication Insightsの構成設定です。
 
 ### logging.applicationInsights.samplingSettings.excludedTypes
 
+**スキーマ参照**: [host_schema_translated.json:779](host_schema_translated.json#L779)
+
 **説明**: サンプリングから除外するテレメトリタイプのセミコロン区切りリスト。
 
 **デフォルト値**: 空
@@ -3678,6 +4101,8 @@ Azure Functionsのログ記録とApplication Insightsの構成設定です。
 
 ### logging.applicationInsights.samplingSettings.includedTypes
 
+**スキーマ参照**: [host_schema_translated.json:784](host_schema_translated.json#L784)
+
 **説明**: サンプリングに含めるテレメトリタイプのセミコロン区切りリスト。
 
 **デフォルト値**: 空（すべて含める）
@@ -3709,6 +4134,8 @@ Azure Functionsのログ記録とApplication Insightsの構成設定です。
 ---
 
 ### logging.applicationInsights.snapshotConfiguration.isEnabled
+
+**スキーマ参照**: [host_schema_translated.json:857](host_schema_translated.json#L857)
 
 **説明**: スナップショットデバッガーを有効にするかどうか。
 
@@ -3744,7 +4171,45 @@ Azure Functionsのログ記録とApplication Insightsの構成設定です。
 
 ---
 
+### logging.applicationInsights.enableLiveMetrics
+
+**スキーマ参照**: [host_schema_translated.json:796](host_schema_translated.json#L796)
+
+**説明**: Live Metricsコレクションを有効にするかどうか。
+
+**デフォルト値**: `true`
+
+**環境変数名**: `AzureFunctionsJobHost__logging__applicationInsights__enableLiveMetrics`
+
+**設定例（Azure Portal）**:
+```json
+{
+  "name": "AzureFunctionsJobHost__logging__applicationInsights__enableLiveMetrics",
+  "value": "true",
+  "slotSetting": false
+}
+```
+
+**host.jsonでの設定**:
+```json
+{
+  "logging": {
+    "applicationInsights": {
+      "enableLiveMetrics": true
+    }
+  }
+}
+```
+
+**推奨設定**:
+- 本番環境: `true` (リアルタイム監視)
+- 開発環境: `true`
+
+---
+
 ### logging.applicationInsights.enableLiveMetricsFilters
+
+**スキーマ参照**: [host_schema_translated.json:796](host_schema_translated.json#L796)
 
 **説明**: Live Metricsフィルターを有効にするかどうか。
 
@@ -3775,6 +4240,8 @@ Azure Functionsのログ記録とApplication Insightsの構成設定です。
 ---
 
 ### logging.applicationInsights.enableDependencyTracking
+
+**スキーマ参照**: [host_schema_translated.json:801](host_schema_translated.json#L801)
 
 **説明**: 依存関係の追跡を有効にするかどうか。
 
@@ -3810,6 +4277,8 @@ Azure Functionsのログ記録とApplication Insightsの構成設定です。
 
 ### logging.applicationInsights.enablePerformanceCountersCollection
 
+**スキーマ参照**: [host_schema_translated.json:806](host_schema_translated.json#L806)
+
 **説明**: パフォーマンスカウンターの収集を有効にするかどうか。
 
 **デフォルト値**: `true`
@@ -3839,6 +4308,8 @@ Azure Functionsのログ記録とApplication Insightsの構成設定です。
 ---
 
 ### logging.applicationInsights.httpAutoCollectionOptions.enableHttpTriggerExtendedInfoCollection
+
+**スキーマ参照**: [host_schema_translated.json:813](host_schema_translated.json#L813)
 
 **説明**: HTTPトリガーの拡張情報収集を有効にするかどうか。
 
@@ -3872,6 +4343,8 @@ Azure Functionsのログ記録とApplication Insightsの構成設定です。
 
 ### logging.applicationInsights.httpAutoCollectionOptions.enableResponseHeaderInjection
 
+**スキーマ参照**: [host_schema_translated.json:823](host_schema_translated.json#L823)
+
 **説明**: HTTP応答ヘッダーへのトレース情報の挿入を有効にするかどうか。
 
 **デフォルト値**: `true`
@@ -3902,7 +4375,47 @@ Azure Functionsのログ記録とApplication Insightsの構成設定です。
 
 ---
 
+### logging.applicationInsights.httpAutoCollectionOptions.enableW3CDistributedTracing
+
+**スキーマ参照**: [host_schema_translated.json:824](host_schema_translated.json#L824)
+
+**説明**: W3C分散トレースプロトコルのサポートを有効または無効にします。
+
+**デフォルト値**: `true`
+
+**環境変数名**: `AzureFunctionsJobHost__logging__applicationInsights__httpAutoCollectionOptions__enableW3CDistributedTracing`
+
+**設定例（Azure Portal）**:
+```json
+{
+  "name": "AzureFunctionsJobHost__logging__applicationInsights__httpAutoCollectionOptions__enableW3CDistributedTracing",
+  "value": "true",
+  "slotSetting": false
+}
+```
+
+**host.jsonでの設定**:
+```json
+{
+  "logging": {
+    "applicationInsights": {
+      "httpAutoCollectionOptions": {
+        "enableW3CDistributedTracing": true
+      }
+    }
+  }
+}
+```
+
+**推奨設定**:
+- 標準: `true` (W3Cトレース有効)
+- レガシー: `false` (旧相関スキーマ使用)
+
+---
+
 ### logging.fileLoggingMode
+
+**スキーマ参照**: [host_schema_translated.json:1005](host_schema_translated.json#L1005)
 
 **説明**: ファイルログモードを指定します。
 
@@ -3937,6 +4450,8 @@ Azure Functionsのログ記録とApplication Insightsの構成設定です。
 
 ### logging.console.isEnabled
 
+**スキーマ参照**: [host_schema_translated.json:1018](host_schema_translated.json#L1018)
+
 **説明**: コンソールログを有効にするかどうか。
 
 **デフォルト値**: `false`
@@ -3966,6 +4481,8 @@ Azure Functionsのログ記録とApplication Insightsの構成設定です。
 ---
 
 ### extensions.applicationInsights.enableLiveMetrics
+
+**スキーマ参照**: [host_schema_translated.json:796](host_schema_translated.json#L796)
 
 **説明**: Application InsightsのLive Metricsを有効にするかどうか。
 
@@ -3997,6 +4514,8 @@ Azure Functionsのログ記録とApplication Insightsの構成設定です。
 
 ### extensions.applicationInsights.enableW3CDistributedTracing
 
+**スキーマ参照**: [host_schema_translated.json:823](host_schema_translated.json#L823)
+
 **説明**: W3C分散トレーシングを有効にするかどうか。
 
 **デフォルト値**: `true`
@@ -4027,9 +4546,11 @@ Azure Functionsのログ記録とApplication Insightsの構成設定です。
 
 ### extensions.applicationInsights.samplingSettings.evaluationInterval
 
+**スキーマ参照**: [host_schema_translated.json:749](host_schema_translated.json#L749)
+
 **説明**: サンプリング評価の間隔。
 
-**デフォルト値**: `00:00:15` (15秒)
+**デフォルト値**: `01:00:00` (1時間)
 
 **環境変数名**: `AzureFunctionsJobHost__extensions__applicationInsights__samplingSettings__evaluationInterval`
 
@@ -4037,7 +4558,7 @@ Azure Functionsのログ記録とApplication Insightsの構成設定です。
 ```json
 {
   "name": "AzureFunctionsJobHost__extensions__applicationInsights__samplingSettings__evaluationInterval",
-  "value": "00:00:15",
+  "value": "01:00:00",
   "slotSetting": false
 }
 ```
@@ -4048,7 +4569,7 @@ Azure Functionsのログ記録とApplication Insightsの構成設定です。
   "extensions": {
     "applicationInsights": {
       "samplingSettings": {
-        "evaluationInterval": "00:00:15"
+        "evaluationInterval": "01:00:00"
       }
     }
   }
@@ -4058,6 +4579,8 @@ Azure Functionsのログ記録とApplication Insightsの構成設定です。
 ---
 
 ### extensions.applicationInsights.samplingSettings.initialSamplingPercentage
+
+**スキーマ参照**: [host_schema_translated.json:754](host_schema_translated.json#L754)
 
 **説明**: サンプリングの初期パーセンテージ。
 
@@ -4091,6 +4614,8 @@ Azure Functionsのログ記録とApplication Insightsの構成設定です。
 
 ### extensions.applicationInsights.samplingSettings.maxSamplingPercentage
 
+**スキーマ参照**: [host_schema_translated.json:774](host_schema_translated.json#L774)
+
 **説明**: サンプリングの最大パーセンテージ。
 
 **デフォルト値**: `100.0`
@@ -4122,6 +4647,8 @@ Azure Functionsのログ記録とApplication Insightsの構成設定です。
 ---
 
 ### extensions.applicationInsights.samplingSettings.minSamplingPercentage
+
+**スキーマ参照**: [host_schema_translated.json:769](host_schema_translated.json#L769)
 
 **説明**: サンプリングの最小パーセンテージ。
 
@@ -4155,9 +4682,11 @@ Azure Functionsのログ記録とApplication Insightsの構成設定です。
 
 ### extensions.applicationInsights.samplingSettings.movingAverageRatio
 
+**スキーマ参照**: [host_schema_translated.json:779](host_schema_translated.json#L779)
+
 **説明**: 移動平均の計算で使用する比率。
 
-**デフォルト値**: `0.25`
+**デフォルト値**: `1`
 
 **環境変数名**: `AzureFunctionsJobHost__extensions__applicationInsights__samplingSettings__movingAverageRatio`
 
@@ -4165,7 +4694,7 @@ Azure Functionsのログ記録とApplication Insightsの構成設定です。
 ```json
 {
   "name": "AzureFunctionsJobHost__extensions__applicationInsights__samplingSettings__movingAverageRatio",
-  "value": "0.25",
+  "value": "1",
   "slotSetting": false
 }
 ```
@@ -4176,7 +4705,7 @@ Azure Functionsのログ記録とApplication Insightsの構成設定です。
   "extensions": {
     "applicationInsights": {
       "samplingSettings": {
-        "movingAverageRatio": 0.25
+        "movingAverageRatio": 1
       }
     }
   }
@@ -4187,9 +4716,11 @@ Azure Functionsのログ記録とApplication Insightsの構成設定です。
 
 ### extensions.applicationInsights.samplingSettings.samplingPercentageDecreaseTimeout
 
+**スキーマ参照**: [host_schema_translated.json:764](host_schema_translated.json#L764)
+
 **説明**: サンプリングパーセンテージを減少させるまでのタイムアウト。
 
-**デフォルト値**: `00:02:00` (2分)
+**デフォルト値**: `00:00:01` (1秒)
 
 **環境変数名**: `AzureFunctionsJobHost__extensions__applicationInsights__samplingSettings__samplingPercentageDecreaseTimeout`
 
@@ -4197,7 +4728,7 @@ Azure Functionsのログ記録とApplication Insightsの構成設定です。
 ```json
 {
   "name": "AzureFunctionsJobHost__extensions__applicationInsights__samplingSettings__samplingPercentageDecreaseTimeout",
-  "value": "00:02:00",
+  "value": "00:00:01",
   "slotSetting": false
 }
 ```
@@ -4208,7 +4739,7 @@ Azure Functionsのログ記録とApplication Insightsの構成設定です。
   "extensions": {
     "applicationInsights": {
       "samplingSettings": {
-        "samplingPercentageDecreaseTimeout": "00:02:00"
+        "samplingPercentageDecreaseTimeout": "00:00:01"
       }
     }
   }
@@ -4219,9 +4750,11 @@ Azure Functionsのログ記録とApplication Insightsの構成設定です。
 
 ### extensions.applicationInsights.samplingSettings.samplingPercentageIncreaseTimeout
 
+**スキーマ参照**: [host_schema_translated.json:759](host_schema_translated.json#L759)
+
 **説明**: サンプリングパーセンテージを増加させるまでのタイムアウト。
 
-**デフォルト値**: `00:15:00` (15分)
+**デフォルト値**: `00:00:01` (1秒)
 
 **環境変数名**: `AzureFunctionsJobHost__extensions__applicationInsights__samplingSettings__samplingPercentageIncreaseTimeout`
 
@@ -4229,7 +4762,7 @@ Azure Functionsのログ記録とApplication Insightsの構成設定です。
 ```json
 {
   "name": "AzureFunctionsJobHost__extensions__applicationInsights__samplingSettings__samplingPercentageIncreaseTimeout",
-  "value": "00:15:00",
+  "value": "00:00:01",
   "slotSetting": false
 }
 ```
@@ -4240,7 +4773,7 @@ Azure Functionsのログ記録とApplication Insightsの構成設定です。
   "extensions": {
     "applicationInsights": {
       "samplingSettings": {
-        "samplingPercentageIncreaseTimeout": "00:15:00"
+        "samplingPercentageIncreaseTimeout": "00:00:01"
       }
     }
   }
@@ -4252,6 +4785,8 @@ Azure Functionsのログ記録とApplication Insightsの構成設定です。
 ## その他の設定
 
 ### managedDependency.enabled
+
+**スキーマ参照**: [host_schema_translated.json:1021](host_schema_translated.json#L1021)
 
 **説明**: マネージド依存関係機能を有効にするかどうか。PowerShell関数で依存関係を自動管理します。
 
@@ -4284,6 +4819,8 @@ Azure Functionsのログ記録とApplication Insightsの構成設定です。
 ---
 
 ### customHandler.description.defaultExecutablePath
+
+**スキーマ参照**: [host_schema_translated.json:1097](host_schema_translated.json#L1097)
 
 **説明**: カスタムハンドラー実行ファイルのパス。
 
@@ -4320,6 +4857,8 @@ Azure Functionsのログ記録とApplication Insightsの構成設定です。
 
 ### concurrency.dynamicConcurrencyEnabled
 
+**スキーマ参照**: [host_schema_translated.json:1552](host_schema_translated.json#L1552)
+
 **説明**: 動的並行性を有効にするかどうか。有効にすると、ランタイムは各関数の並行性を動的に調整します。
 
 **デフォルト値**: `false`
@@ -4352,6 +4891,10 @@ Azure Functionsのログ記録とApplication Insightsの構成設定です。
 ---
 
 ### concurrency.maximumFunctionConcurrency
+
+**スキーマ参照**: [host_schema_translated.json:1548](host_schema_translated.json#L1548)
+
+> **補足**: 公式 host.json v2 スキーマには `maximumFunctionConcurrency` プロパティが記載されていません。`concurrency` オブジェクトの仕様 (L1548 以降) のみ公開されています。
 
 **説明**: 関数の最大並行実行数。
 
@@ -4386,9 +4929,11 @@ Azure Functionsのログ記録とApplication Insightsの構成設定です。
 
 ### sendCanceledInvocationsToWorker
 
+**スキーマ参照**: [host_schema_translated.json:1566](host_schema_translated.json#L1566)
+
 **説明**: キャンセルされた呼び出しをワーカープロセスに送信するかどうか。
 
-**デフォルト値**: `false`
+**デフォルト値**: `true`
 
 **環境変数名**: `AzureFunctionsJobHost__sendCanceledInvocationsToWorker`
 
@@ -4396,7 +4941,7 @@ Azure Functionsのログ記録とApplication Insightsの構成設定です。
 ```json
 {
   "name": "AzureFunctionsJobHost__sendCanceledInvocationsToWorker",
-  "value": "false",
+  "value": "true",
   "slotSetting": false
 }
 ```
@@ -4404,17 +4949,19 @@ Azure Functionsのログ記録とApplication Insightsの構成設定です。
 **host.jsonでの設定**:
 ```json
 {
-  "sendCanceledInvocationsToWorker": false
+  "sendCanceledInvocationsToWorker": true
 }
 ```
 
 **推奨設定**:
-- 通常: `false`
-- キャンセル処理が必要: `true`
+- 通常: `true` (デフォルト)
+- キャンセル処理が不要: `false`
 
 ---
 
 ### concurrency.snapshotPersistenceEnabled
+
+**スキーマ参照**: [host_schema_translated.json:1557](host_schema_translated.json#L1557)
 
 **説明**: 同時実行のスナップショット永続化を有効にするかどうか。
 
@@ -4443,6 +4990,8 @@ Azure Functionsのログ記録とApplication Insightsの構成設定です。
 ---
 
 ### customHandler.enableForwardingHttpRequest
+
+**スキーマ参照**: [host_schema_translated.json:1115](host_schema_translated.json#L1115)
 
 **説明**: カスタムハンドラーへのHTTPリクエスト転送を有効にするかどうか。
 
